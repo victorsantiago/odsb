@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Déficit Habitacional Municipal — ODSB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <style>
+    :root {
+      --primary: #1B4F9B; --primary-light: #2A6CC4; --primary-dark: #0E3270;
+      --accent: #E05A2B; --dark: #091C3A; --light: #EEF2F8;
+      --text: #1a2a3a; --text-light: #5a7090; --border: #C8D8EE;
+      --green: #8DC63F;
+      /* Cor da dimensão — alterar por página */
+      --dim-color: #148f77;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Sora',sans-serif; color:var(--text); background:var(--light); overflow-x:hidden; }
+
+    /* ══ HEADER ══ */
+    header {
+      position:fixed; top:0; width:100%;
+      background:rgba(255,255,255,0.95); backdrop-filter:blur(12px);
+      z-index:1000; border-bottom:1px solid var(--border);
+    }
+    nav {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:0.9rem 3rem; max-width:1400px; margin:0 auto;
+    }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a {
+      text-decoration:none; color:var(--text); font-weight:500; font-size:0.9rem;
+      position:relative; transition:color 0.3s;
+    }
+    .nav-links a::after {
+      content:''; position:absolute; bottom:-4px; left:0;
+      width:0; height:2px; background:var(--accent); transition:width 0.3s;
+    }
+    .nav-links a:hover { color:var(--primary); }
+    .nav-links a:hover::after { width:100%; }
+    .nav-cta {
+      background:linear-gradient(135deg,var(--primary),var(--primary-light));
+      color:white; padding:0.65rem 1.5rem; border-radius:50px;
+      text-decoration:none; font-weight:600; font-size:0.88rem; transition:all 0.3s;
+    }
+    .nav-cta:hover { transform:translateY(-2px); }
+
+    /* ══ BREADCRUMB ══ */
+    .breadcrumb-bar {
+      margin-top:64px;
+      background:#fff;
+      border-bottom:1px solid var(--border);
+      padding:0.6rem 3rem;
+    }
+    .breadcrumb {
+      max-width:1400px; margin:0 auto;
+      display:flex; align-items:center; gap:0.5rem;
+      font-size:0.78rem; color:var(--text-light); flex-wrap:wrap;
+    }
+    .breadcrumb a {
+      color:var(--primary); text-decoration:none; font-weight:600;
+      transition:color 0.2s;
+    }
+    .breadcrumb a:hover { color:var(--accent); }
+    .breadcrumb-sep { opacity:0.4; }
+    .breadcrumb-current { color:var(--text); font-weight:700; }
+
+    /* ══ HERO DO INDICADOR ══ */
+    .ind-hero {
+      background:var(--dim-color);
+      padding:2rem 3rem;
+    }
+    .ind-hero-inner {
+      max-width:1400px; margin:0 auto;
+      display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+    }
+    .ind-hero-icon {
+      width:52px; height:52px; flex-shrink:0;
+      background:rgba(255,255,255,0.15); border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .ind-hero-icon svg { width:28px; height:28px; stroke:white; }
+    .ind-hero-text { flex:1; min-width:200px; }
+    .ind-hero-badge {
+      font-size:0.68rem; font-weight:700; letter-spacing:0.14em;
+      text-transform:uppercase; color:rgba(255,255,255,0.55);
+      display:block; margin-bottom:4px;
+    }
+    .ind-hero-title {
+      font-size:clamp(1.1rem,2.5vw,1.6rem); font-weight:800; color:#fff; line-height:1.3;
+    }
+    .ind-hero-actions { display:flex; gap:0.6rem; flex-wrap:wrap; }
+    .btn-action {
+      display:inline-flex; align-items:center; gap:7px;
+      background:rgba(255,255,255,0.15); border:1.5px solid rgba(255,255,255,0.3);
+      color:#fff; padding:0.5rem 1.1rem; border-radius:50px;
+      font-size:0.8rem; font-weight:700; text-decoration:none; cursor:pointer;
+      font-family:'Sora',sans-serif; transition:all 0.2s; white-space:nowrap;
+      backdrop-filter:blur(4px);
+    }
+    .btn-action:hover { background:rgba(255,255,255,0.28); transform:translateY(-2px); }
+    .btn-action svg { width:13px; height:13px; flex-shrink:0; }
+
+    /* ══ CONTEÚDO ══ */
+    .ind-content {
+      max-width:1400px; margin:0 auto;
+      padding:2.5rem 3rem;
+      display:flex; flex-direction:column; gap:1.8rem;
+    }
+
+    /* Layout duas colunas */
+    .ind-content.two-col {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1.4rem;
+      align-items:start;
+    }
+    /* Fonte e Metodologia e Navegação sempre ocupam linha inteira */
+    .ind-content.two-col .card-meta,
+    .ind-content.two-col .ind-nav { grid-column: 1 / -1; }
+
+    /* ══ BOTÃO DE ALTERNÂNCIA ══ */
+    .layout-toggle {
+      display:flex; align-items:center;
+      background:rgba(255,255,255,0.15);
+      border:1.5px solid rgba(255,255,255,0.3);
+      border-radius:50px; overflow:hidden; padding:2px;
+      gap:2px;
+    }
+    .layout-btn {
+      display:flex; align-items:center; justify-content:center;
+      width:32px; height:28px; border:none; cursor:pointer;
+      border-radius:46px; background:transparent; color:rgba(255,255,255,0.6);
+      transition:all 0.2s; flex-shrink:0;
+    }
+    .layout-btn svg { width:14px; height:14px; display:block; }
+    .layout-btn.active { background:rgba(255,255,255,0.9); color:var(--dim-color); }
+    .layout-btn:hover:not(.active) { background:rgba(255,255,255,0.25); color:#fff; }
+
+    /* ══ CARD GENÉRICO ══ */
+    .card {
+      background:#fff; border-radius:16px;
+      padding:2rem 2.2rem;
+      box-shadow:0 2px 12px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size:0.95rem; font-weight:800; color:var(--dark);
+      margin-bottom:0.4rem;
+    }
+    .card-subtitle {
+      font-size:0.75rem; color:var(--text-light); margin-bottom:1.4rem;
+      line-height:1.5;
+    }
+
+    /* ══ GRÁFICO ══ */
+    .chart-wrap {
+      position:relative; width:100%; min-height:300px;
+    }
+    .chart-wrap > div { width:100% !important; }
+    @media(max-width:600px) {
+      .chart-wrap { min-height:240px; }
+    }
+
+    /* ══ ANÁLISE TEXTUAL ══ */
+    .analysis-text {
+      font-size:0.9rem; line-height:1.8; color:var(--text-light);
+      border-left:3px solid var(--dim-color);
+      padding-left:1rem; margin-top:1.2rem;
+    }
+
+    /* ══ BOTÕES DE EXPORTAÇÃO ABAIXO DO GRÁFICO ══ */
+    .chart-actions {
+      display:flex; gap:0.6rem; margin-top:1.2rem; flex-wrap:wrap;
+    }
+    .btn-export {
+      display:inline-flex; align-items:center; gap:6px;
+      background:var(--light); border:1px solid var(--border);
+      color:var(--primary); padding:0.45rem 1rem; border-radius:8px;
+      font-size:0.75rem; font-weight:700; cursor:pointer;
+      font-family:'Sora',sans-serif; transition:all 0.2s;
+      text-decoration:none;
+    }
+    .btn-export:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .btn-export svg { width:12px; height:12px; }
+
+    /* ══ TABELA DE DADOS ══ */
+    .table-wrap { overflow-x:auto; margin-top:0.5rem; }
+    table {
+      width:100%; border-collapse:collapse;
+      font-size:0.83rem;
+    }
+    thead th {
+      background:var(--light); color:var(--text);
+      font-weight:700; font-size:0.72rem; text-transform:uppercase;
+      letter-spacing:0.08em; padding:0.7rem 1rem;
+      border-bottom:2px solid var(--border); text-align:left;
+    }
+    tbody td {
+      padding:0.65rem 1rem; border-bottom:1px solid var(--border);
+      color:var(--text); vertical-align:middle;
+    }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover td { background:var(--light); }
+    .td-badge {
+      display:inline-block; padding:2px 10px; border-radius:20px;
+      font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    }
+    .td-badge.up   { background:rgba(30,132,73,0.12); color:#1e8449; }
+    .td-badge.down { background:rgba(192,57,43,0.12); color:#c0392b; }
+    .td-badge.flat { background:rgba(90,112,144,0.10); color:var(--text-light); }
+    .td-highlight  { font-weight:700; color:var(--dim-color); font-family:'IBM Plex Mono',monospace; }
+
+    /* ══ FONTE / METODOLOGIA ══ */
+    .meta-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:1rem;
+    }
+    .meta-block { }
+    .meta-label {
+      font-size:0.68rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:0.1em; color:var(--text-light); margin-bottom:0.35rem;
+    }
+    .meta-value {
+      font-size:0.85rem; color:var(--text); line-height:1.6;
+    }
+    .meta-value a { color:var(--primary); text-decoration:none; }
+    .meta-value a:hover { color:var(--accent); }
+
+    /* ══ NAVEGAÇÃO ENTRE INDICADORES ══ */
+    .ind-nav {
+      display:flex; justify-content:space-between; align-items:center;
+      gap:1rem; flex-wrap:wrap;
+    }
+    .ind-nav-btn {
+      display:flex; align-items:center; gap:10px;
+      background:#fff; border:1px solid var(--border);
+      border-radius:12px; padding:0.9rem 1.2rem;
+      text-decoration:none; transition:all 0.2s;
+      flex:1; min-width:200px; max-width:280px;
+    }
+    .ind-nav-btn:hover { border-color:var(--dim-color); box-shadow:0 4px 16px rgba(0,0,0,0.08); }
+    .ind-nav-btn.prev { justify-content:flex-start; }
+    .ind-nav-btn.next { justify-content:flex-end; text-align:right; margin-left:auto; }
+    .ind-nav-arrow { font-size:1.1rem; color:var(--dim-color); flex-shrink:0; }
+    .ind-nav-label { font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-light); }
+    .ind-nav-name  { font-size:0.82rem; font-weight:700; color:var(--dark); margin-top:2px; line-height:1.3; }
+
+    /* ══ FOOTER & PARTNERS ══ */
+    .partners-bar { background:#f0f2f5; border-top:1px solid #dde3ea; padding:1.8rem 3rem; }
+    .partners-inner {
+      max-width:1400px; margin:0 auto;
+      display:grid; grid-template-columns:repeat(4,1fr); align-items:center;
+    }
+    .partner-group { display:flex; flex-direction:column; gap:10px; padding:0 2rem; border-right:1px solid #ccd4de; }
+    .partner-group:first-child { padding-left:0; }
+    .partner-group:last-child  { border-right:none; }
+    .partner-label { font-size:0.72rem; font-weight:600; color:#8a9aaa; text-transform:uppercase; letter-spacing:0.1em; }
+    .partner-logos { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .partner-logos a { display:flex; align-items:center; text-decoration:none; }
+    footer { background:#E05A2B; color:rgba(255,255,255,0.9); padding:4rem 3rem 2rem; }
+    .footer-inner { max-width:1400px; margin:0 auto; }
+    .footer-top {
+      display:grid; grid-template-columns:2fr 1fr 1fr 1fr;
+      gap:3rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(255,255,255,0.18);
+    }
+    .footer-brand p { font-size:0.85rem; line-height:1.7; color:rgba(255,255,255,0.55); max-width:280px; }
+    .footer-col h4 { font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.14em; color:#fff; margin-bottom:1rem; }
+    .footer-col ul { list-style:none; }
+    .footer-col ul li { margin-bottom:0.6rem; }
+    .footer-col ul li a { color:rgba(255,255,255,0.65); text-decoration:none; font-size:0.87rem; transition:color 0.2s; }
+    .footer-col ul li a:hover { color:#fff; }
+    .footer-bottom {
+      display:flex; justify-content:space-between; align-items:center;
+      padding-top:1.8rem; font-size:0.78rem; color:rgba(255,255,255,0.5); flex-wrap:wrap; gap:0.5rem;
+    }
+    .footer-bottom a { color:rgba(255,255,255,0.5); text-decoration:none; }
+    .footer-bottom a:hover { color:#fff; }
+
+    /* ══ RESPONSIVE ══ */
+    @media(max-width:900px) {
+      nav { padding:0.8rem 1.2rem; } .nav-links { display:none; }
+      .breadcrumb-bar { padding:0.6rem 1.2rem; }
+      .ind-hero { padding:1.5rem 1.2rem; }
+      .ind-content { padding:2rem 1.2rem; }
+      .ind-content.two-col { grid-template-columns:1fr; }
+      .meta-grid { grid-template-columns:1fr; }
+      .footer-top { grid-template-columns:1fr 1fr; gap:2rem; }
+      .partners-inner { grid-template-columns:1fr 1fr; gap:1.5rem 0; }
+      .layout-toggle { display:none; }
+    }
+    @media(max-width:600px) {
+      nav { padding:0.75rem 1rem; } .nav-cta { display:none; }
+      #navBurger { display:flex !important; }
+      .breadcrumb-bar { padding:0.5rem 1rem; }
+      .ind-hero { padding:1.2rem 1rem; }
+      .ind-hero-actions { width:100%; }
+      .ind-content { padding:1.5rem 1rem; gap:1.2rem; }
+      .card { padding:1.4rem 1.2rem; }
+      .ind-nav { flex-direction:column; }
+      .ind-nav-btn { max-width:100%; width:100%; }
+      .footer-top { grid-template-columns:1fr; gap:1.8rem; }
+      .partners-inner { grid-template-columns:1fr; }
+      table { font-size:0.76rem; }
+      thead th, tbody td { padding:0.55rem 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <img src="logo.png" alt="ODSB" style="height:38px;width:auto;object-fit:contain;">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#inicio">Início</a></li>
+      <li><a href="index.html#dimensoes">Dimensões</a></li>
+      <li><a href="index.html#galeria">Publicações</a></li>
+      <li><a href="colaboradores.html">Colaboradores</a></li>
+      <li><a href="sobre.html">Sobre</a></li>
+    </ul>
+    <button id="navBurger" aria-label="Menu" style="display:none;background:none;border:none;cursor:pointer;padding:4px;flex-direction:column;gap:5px;">
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+    </button>
+  </nav>
+  <div id="mobileMenu" style="display:none;position:fixed;top:60px;left:0;right:0;background:rgba(255,255,255,0.98);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:999;padding:1rem 1.5rem 1.5rem;flex-direction:column;gap:0;">
+    <a href="index.html#inicio"    onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Início</a>
+    <a href="index.html#dimensoes" onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Dimensões</a>
+    <a href="index.html#galeria"   onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Publicações</a>
+    <a href="colaboradores.html"   onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Colaboradores</a>
+    <a href="sobre.html"           onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Sobre</a>
+  </div>
+</header>
+
+<div class="breadcrumb-bar">
+  <div class="breadcrumb">
+    <a href="index.html">Início</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="territorio.html">Ordenamento Territorial e Habitação</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current">Déficit Habitacional Municipal</span>
+  </div>
+</div>
+
+<div class="ind-hero">
+  <div class="ind-hero-inner">
+    <div class="ind-hero-icon">
+      <svg viewBox="0 0 36 36" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 5 L32 15 L32 31 L4 31 L4 15 Z"/><rect x="13" y="21" width="10" height="10"/><polyline points="4,15 18,5 32,15"/>
+      </svg>
+    </div>
+    <div class="ind-hero-text">
+      <span class="ind-hero-badge">Ordenamento Territorial e Habitação · Indicador 01</span>
+      <div class="ind-hero-title">Déficit Habitacional Municipal</div>
+    </div>
+    <div class="ind-hero-actions">
+      <a href="territorio.html" class="btn-action">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg>
+        Resumo da dimensão
+      </a>
+      <div class="layout-toggle" id="layoutToggle" title="Alternar layout">
+        <button class="layout-btn active" id="btnOne" onclick="setLayout(1)" title="Uma coluna">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="5" rx="1.5" fill="currentColor"/><rect x="2" y="9" width="12" height="5" rx="1.5" fill="currentColor"/></svg>
+        </button>
+        <button class="layout-btn" id="btnTwo" onclick="setLayout(2)" title="Duas colunas">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="6" height="5" rx="1.5" fill="currentColor"/><rect x="9" y="2" width="6" height="5" rx="1.5" fill="currentColor"/><rect x="1" y="9" width="6" height="5" rx="1.5" fill="currentColor"/><rect x="9" y="9" width="6" height="5" rx="1.5" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ind-content" id="indContent">
+
+  <div class="card">
+    <div class="card-title">Déficit Habitacional — Barcarena (2016–2022)</div>
+    <div class="card-subtitle">Fonte: FJP — Fundação João Pinheiro</div>
+    <div class="chart-wrap"><div id="chart1"></div></div>
+    <p class="analysis-text">O déficit habitacional de Barcarena cresceu em termos absolutos ao longo do período, acompanhando a expansão demográfica. O componente de coabitação familiar e o de ônus excessivo com aluguel respondem pela maior parte do déficit, especialmente entre as famílias de renda de até três salários mínimos.</p>
+    <div class="chart-actions">
+      <button class="btn-export" onclick="Highcharts.charts[0].exportChart({type:'image/png'})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Salvar gráfico (PNG)</button>
+      <button class="btn-export" onclick="Highcharts.charts[0].downloadCSV()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Baixar dados (CSV)</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Componentes do Déficit Habitacional — Barcarena (2022)</div>
+    <div class="card-subtitle">Fonte: FJP / Censo IBGE 2022</div>
+    <div class="chart-wrap"><div id="chart2"></div></div>
+    <p class="analysis-text">A coabitação familiar involuntária é o principal componente do déficit em Barcarena, seguida pelo ônus excessivo com aluguel e pela inadequação dos domicílios. A precariedade habitacional é mais intensa nas comunidades ribeirinhas e nas ocupações irregulares nas margens de igarapés e áreas de várzea.</p>
+    <div class="chart-actions">
+      <button class="btn-export" onclick="Highcharts.charts[1].exportChart({type:'image/png'})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Salvar gráfico (PNG)</button>
+      <button class="btn-export" onclick="Highcharts.charts[1].downloadCSV()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Baixar dados (CSV)</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Déficit Habitacional — Barcarena (2016–2022)</div>
+    <div class="card-subtitle">Absoluto e relativo ao total de domicílios</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Ano</th><th>Déficit Absoluto</th><th>Déficit Relativo (%)</th><th>Coabitação</th><th>Ônus Aluguel</th></tr></thead>
+        <tbody><tr><td>2016</td><td  class="td-highlight">4.800</td><td>14,2%</td><td>2.100</td><td>1.600</td></tr>
+<tr><td>2019</td><td  class="td-highlight">5.600</td><td>15,2%</td><td>2.500</td><td>1.850</td></tr>
+<tr><td>2022</td><td  class="td-highlight">6.200</td><td>15,8%</td><td>2.800</td><td>1.900</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-meta">
+    <div class="card-title">Fonte e Metodologia</div>
+    <div style="margin-top:1rem;" class="meta-grid">
+      <div class="meta-block"><div class="meta-label">Fonte dos dados</div><div class="meta-value"><a href="https://www.ibge.gov.br" target="_blank" rel="noopener">FJP — Fundação João Pinheiro / Censo Demográfico IBGE 2022</a></div></div>
+      <div class="meta-block"><div class="meta-label">Periodicidade</div><div class="meta-value">Trienal / Censo</div></div>
+      <div class="meta-block"><div class="meta-label">Última atualização</div><div class="meta-value">2023 — competência 2022</div></div>
+      <div class="meta-block"><div class="meta-label">Unidade de medida</div><div class="meta-value">Número de domicílios e percentual</div></div>
+      <div class="meta-block" style="grid-column:1/-1;"><div class="meta-label">Metodologia</div><div class="meta-value">O déficit habitacional é estimado pela FJP com base na metodologia de habitações inadequadas e família sem domicílio, contemplando quatro componentes: habitação precária, coabitação familiar, ônus excessivo com aluguel urbano e adensamento excessivo em domicílios alugados.</div></div>
+    </div>
+  </div>
+
+  <div class="ind-nav" id="indNav">
+    <a id="btnPrev" href="#" class="ind-nav-btn prev" style="display:none;">
+      <span class="ind-nav-arrow">←</span>
+      <div><div class="ind-nav-label">Indicador anterior</div><div class="ind-nav-name" id="prevName"></div></div>
+    </a>
+    <a id="btnNext" href="#" class="ind-nav-btn next" style="display:none;">
+      <div><div class="ind-nav-label">Próximo indicador</div><div class="ind-nav-name" id="nextName"></div></div>
+      <span class="ind-nav-arrow">→</span>
+    </a>
+  </div>
+
+</div>
+
+<div class="partners-bar">
+  <div class="partners-inner">
+    <div class="partner-group"><span class="partner-label">Contato</span><a href="mailto:faleconosco@fundohydro.org" style="font-size:0.88rem;color:#1B4F9B;text-decoration:none;display:flex;align-items:center;gap:6px;font-weight:600;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B4F9B" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>faleconosco@fundohydro.org</a></div>
+    <div class="partner-group"><span class="partner-label">Realização</span><div class="partner-logos"><a href="https://fundohydro.org/inicio" target="_blank" rel="noopener"><img src="fundohydro.png" alt="Fundo Hydro" style="height:40px;width:auto;object-fit:contain;"></a></div></div>
+    <div class="partner-group"><span class="partner-label">Apoio</span><div class="partner-logos"><a href="https://www.barcarenasustentavel.org/" target="_blank" rel="noopener"><img src="ibs.png" alt="IBS" style="height:44px;width:auto;object-fit:contain;"></a></div></div>
+    <div class="partner-group"><span class="partner-label">Execução</span><div class="partner-logos"><a href="https://ufpa.br/" target="_blank" rel="noopener"><img src="ufpa.png" alt="UFPA" style="height:52px;width:auto;object-fit:contain;"></a></div></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand"><div style="margin-bottom:0.8rem;"><img src="logo.png" alt="ODSB" style="height:40px;width:auto;object-fit:contain;filter:brightness(0) invert(1);"></div><p>Produção, análise e difusão de dados sobre os indicadores do município de Barcarena, Pará. Uma iniciativa envolvendo o apoio do Fundo Hydro, UFPA e Transparência Pública para a melhoria da qualidade de vida em Barcarena.</p></div>
+      <div class="footer-col"><h4>Conteúdo</h4><ul><li><a href="#">Relatórios</a></li><li><a href="#">Indicadores</a></li><li><a href="colaboradores.html">Colaboradores</a></li><li><a href="#">Pesquisas</a></li></ul></div>
+      <div class="footer-col"><h4>Observatório</h4><ul><li><a href="sobre.html">Sobre</a></li><li><a href="colaboradores.html">Colaboradores</a></li><li><a href="#">Missão</a></li><li><a href="#">Metodologia</a></li></ul></div>
+      <div class="footer-col"><h4>Contato</h4><ul><li><a href="mailto:faleconosco@fundohydro.org">Email</a></li><li><a href="#">Redes Sociais</a></li><li><a href="#">Privacidade</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Observatório do Desenvolvimento Sustentável de Barcarena. Todos os direitos reservados.</span><a href="#">Política de Privacidade</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var burger=document.getElementById('navBurger');
+  var menu=document.getElementById('mobileMenu');
+  if(!burger||!menu) return;
+  var open=false;
+  burger.addEventListener('click',function(){
+    open=!open; menu.style.display=open?'flex':'none';
+    var bars=burger.querySelectorAll('span');
+    if(open){bars[0].style.transform='translateY(7px) rotate(45deg)';bars[1].style.opacity='0';bars[2].style.transform='translateY(-7px) rotate(-45deg)';}
+    else{bars[0].style.transform='';bars[1].style.opacity='';bars[2].style.transform='';}
+  });
+  function closeMobileMenu(){open=false;menu.style.display='none';var bars=burger.querySelectorAll('span');bars[0].style.transform='';bars[1].style.opacity='';bars[2].style.transform='';}
+  window.closeMobileMenu=closeMobileMenu;
+})();
+
+Highcharts.setOptions({
+  lang:{ decimalPoint:',', thousandsSep:'.', downloadPNG:'Salvar como PNG', downloadCSV:'Baixar CSV', viewFullscreen:'Tela cheia', numericSymbols:null },
+  chart:{ style:{ fontFamily:"'Sora', sans-serif" }, backgroundColor:'#ffffff', spacing:[16,16,16,8] },
+  colors:['#148f77','#E05A2B','#8DC63F','#b7950b','#148f77','#922b21','#6080c4'],
+  title:{ style:{ fontSize:'0px' } }, subtitle:{ style:{ fontSize:'0px' } },
+  credits:{ enabled:false },
+  exporting:{ buttons:{ contextButton:{ enabled:false } } },
+  tooltip:{ backgroundColor:'#091C3A', borderWidth:0, borderRadius:8, shadow:false, style:{ color:'#fff', fontSize:'12px' }, valueDecimals:2 },
+  legend:{ itemStyle:{ fontSize:'11px', fontWeight:'600', color:'#5a7090' }, symbolRadius:2, symbolHeight:8, symbolWidth:14, margin:20 },
+  xAxis:{ lineColor:'#C8D8EE', tickColor:'#C8D8EE', labels:{ style:{ fontSize:'11px', color:'#5a7090' } } },
+  yAxis:{ gridLineColor:'rgba(0,0,0,0.06)', labels:{ style:{ fontSize:'11px', color:'#5a7090' } }, title:{ text:null } },
+  plotOptions:{
+    column:{ borderRadius:4, borderWidth:0, groupPadding:0.12, pointPadding:0.05, dataLabels:{ enabled:false } },
+    series:{ animation:{ duration:600 } }
+  },
+  responsive:{ rules:[{ condition:{ maxWidth:500 }, chartOptions:{ chart:{ spacing:[12,8,12,4] }, legend:{ layout:'horizontal', align:'center', verticalAlign:'bottom', itemStyle:{ fontSize:'10px' } }, xAxis:{ labels:{ style:{ fontSize:'10px' } } }, yAxis:{ labels:{ style:{ fontSize:'10px' } } }, plotOptions:{ column:{ groupPadding:0.08, pointPadding:0.02 } } } }] }
+});
+
+Highcharts.chart('chart1', {
+  chart: { type:'column' },
+  xAxis: { categories: ["2016", "2018", "2019", "2022"] },
+  yAxis: { min:0, max:8000, tickInterval:2000 },
+  series: [ {name:'Déficit absoluto (dom.)', data:[4800,5200,5600,6200]},
+    {name:'Déficit relativo (%)', data:[14.2,14.8,15.2,15.8], color:'#E05A2B'} ]
+});
+
+Highcharts.chart('chart2', {
+  chart: { type:'column' },
+  xAxis: { categories: ["Coabitação", "Ônus Aluguel", "Domicílio Precário", "Adensamento Excessivo"] },
+  yAxis: { min:0, max:3500, tickInterval:500 },
+  series: [ {name:'Domicílios', data:[2800,1900,1100,400]} ]
+});
+
+function setLayout(cols) {
+  var content=document.getElementById('indContent');
+  var btnOne=document.getElementById('btnOne');
+  var btnTwo=document.getElementById('btnTwo');
+  if(cols===2){ content.classList.add('two-col'); btnTwo.classList.add('active'); btnOne.classList.remove('active'); }
+  else{ content.classList.remove('two-col'); btnOne.classList.add('active'); btnTwo.classList.remove('active'); }
+  setTimeout(function(){ Highcharts.charts.forEach(function(c){ if(c) c.reflow(); }); }, 50);
+}
+
+var csvRows = [
+  ['Ano','Déficit Absoluto','Déficit Relativo (%)','Coabitação','Ônus Aluguel'],
+  ['2016','4.800','14,2%','2.100','1.600'],
+  ['2019','5.600','15,2%','2.500','1.850'],
+  ['2022','6.200','15,8%','2.800','1.900']
+];
+function exportarCSV() {
+  var csv = csvRows.map(function(r){ return r.join(';'); }).join('\n');
+  var blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  var link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'territorio-deficit.csv';
+  link.click();
+}
+
+(function() {
+  var INDICADORES = [
+    { nome: 'Déficit Habitacional Municipal', href: 'territorio-deficit.html' },
+    { nome: 'Domicílios por Condição de Ocupação', href: 'territorio-domicilios.html' },
+    { nome: 'Crescimento Populacional Urbano e Rural', href: 'territorio-populacao.html' },
+    { nome: 'Regularização Fundiária', href: 'territorio-fundiaria.html' },
+    { nome: 'Uso e Cobertura do Solo', href: 'territorio-uso-solo.html' }
+  ];
+  var paginaAtual = window.location.pathname.split('/').pop() || 'territorio-deficit.html';
+  var idxAtual = INDICADORES.findIndex(function(i){ return i.href === paginaAtual; });
+  if(idxAtual === -1) idxAtual = 0;
+  var btnPrev = document.getElementById('btnPrev');
+  var btnNext = document.getElementById('btnNext');
+  if(idxAtual > 0) {
+    btnPrev.href = INDICADORES[idxAtual-1].href;
+    document.getElementById('prevName').textContent = INDICADORES[idxAtual-1].nome;
+    btnPrev.style.display = 'flex';
+  }
+  if(idxAtual < INDICADORES.length-1) {
+    btnNext.href = INDICADORES[idxAtual+1].href;
+    document.getElementById('nextName').textContent = INDICADORES[idxAtual+1].nome;
+    btnNext.style.display = 'flex';
+  }
+})();
+</script>
+</body>
+</html>
