@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Segurança — ODSB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #1B4F9B; --primary-light: #2A6CC4; --primary-dark: #0E3270;
+      --accent: #E05A2B; --dark: #091C3A; --light: #EEF2F8;
+      --text: #1a2a3a; --text-light: #5a7090; --border: #C8D8EE;
+      --green: #8DC63F; --dim-color: #1e8449;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Sora',sans-serif; color:var(--text); background:var(--light); overflow-x:hidden; }
+
+    header {
+      position:fixed; top:0; width:100%;
+      background:rgba(255,255,255,0.95); backdrop-filter:blur(12px);
+      z-index:1000; border-bottom:1px solid var(--border);
+      animation:slideDown 0.6s ease-out;
+    }
+    @keyframes slideDown { from{transform:translateY(-100%);opacity:0;} to{transform:translateY(0);opacity:1;} }
+    nav {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:0.9rem 3rem; max-width:1400px; margin:0 auto;
+    }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a {
+      text-decoration:none; color:var(--text); font-weight:500; font-size:0.9rem;
+      position:relative; transition:color 0.3s;
+    }
+    .nav-links a::after {
+      content:''; position:absolute; bottom:-4px; left:0;
+      width:0; height:2px; background:var(--accent); transition:width 0.3s;
+    }
+    .nav-links a:hover { color:var(--primary); }
+    .nav-links a:hover::after { width:100%; }
+    .nav-cta {
+      background:linear-gradient(135deg,var(--primary),var(--primary-light));
+      color:white; padding:0.65rem 1.5rem; border-radius:50px;
+      text-decoration:none; font-weight:600; font-size:0.88rem; transition:all 0.3s;
+    }
+    .nav-cta:hover { transform:translateY(-2px); }
+
+    .dim-menu-wrap {
+      margin-top:64px; background:var(--dark);
+      border-bottom:2px solid rgba(255,255,255,0.08);
+      overflow-x:auto; scrollbar-width:none;
+    }
+    .dim-menu-wrap::-webkit-scrollbar { display:none; }
+    .dim-menu {
+      display:flex; width:100%; max-width:1400px; margin:0 auto; padding:0 1rem;
+    }
+    .dim-nav-item {
+      display:flex; flex-direction:column; align-items:center;
+      gap:7px; padding:0.8rem 0.4rem; text-decoration:none;
+      color:rgba(255,255,255,0.55); font-size:0.60rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.06em; text-align:center;
+      flex:1; border-bottom:3px solid transparent; transition:all 0.25s; line-height:1.3;
+    }
+    .dim-nav-item:hover { color:#fff; background:rgba(255,255,255,0.07); border-bottom-color:var(--dim-color); }
+    .dim-nav-item.active { color:#fff; background:rgba(255,255,255,0.10); border-bottom-color:var(--dim-color); }
+    .dim-nav-icon {
+      width:48px; height:48px; background:var(--dim-color); border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      opacity:0.75; transition:opacity 0.25s, transform 0.25s;
+    }
+    .dim-nav-item:hover .dim-nav-icon,
+    .dim-nav-item.active .dim-nav-icon { opacity:1; transform:scale(1.08); }
+    .dim-nav-icon svg { width:26px; height:26px; stroke:white; }
+
+    .dim-hero {
+      background: #1e8449; padding:2.5rem 3rem; position:relative; overflow:hidden;
+    }
+    .dim-hero-inner {
+      max-width:1400px; margin:0 auto;
+      display:flex; align-items:center; gap:1.5rem; position:relative;
+    }
+    .dim-hero-icon {
+      width:56px; height:56px; flex-shrink:0;
+      background:rgba(255,255,255,0.15); border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .dim-hero-icon svg { width:32px; height:32px; stroke:white; }
+    .dim-hero-title {
+      font-size:clamp(1.3rem,2.5vw,2rem); font-weight:800; color:#fff; flex:1;
+    }
+    .dim-hero-badge {
+      font-size:0.72rem; font-weight:700; letter-spacing:0.12em;
+      text-transform:uppercase; color:rgba(255,255,255,0.6); display:block; margin-bottom:4px;
+    }
+    .btn-pdf {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,0.18); border:1.5px solid rgba(255,255,255,0.35);
+      color:#fff; padding:0.6rem 1.4rem; border-radius:50px;
+      font-size:0.85rem; font-weight:700; text-decoration:none;
+      transition:all 0.25s; white-space:nowrap; backdrop-filter:blur(4px);
+    }
+    .btn-pdf:hover { background:rgba(255,255,255,0.30); transform:translateY(-2px); }
+    .btn-pdf svg { width:14px; height:14px; }
+
+    .dim-content { max-width:1400px; margin:0 auto; padding:3.5rem 3rem; }
+    .dim-desc-card {
+      background:#fff; border-radius:16px; padding:2.5rem;
+      border-left:5px solid #1e8449; margin-bottom:3rem;
+    }
+    .dim-desc-card p { font-size:0.97rem; line-height:1.85; color:var(--text-light); }
+
+    .dim-indicators-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; }
+    .dim-indicators-header h2 { font-size:1.1rem; font-weight:800; color:var(--dark); }
+    .ind-count {
+      background:#1e844922; color:#1e8449; border:1px solid #1e844944;
+      border-radius:20px; padding:2px 12px; font-size:0.72rem; font-weight:700;
+      font-family:'IBM Plex Mono',monospace;
+    }
+    .dim-indicators-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+    .ind-card {
+      background:#fff; border-radius:12px; padding:1.4rem 1.2rem;
+      border-top:3px solid #1e8449; text-decoration:none;
+      display:block; position:relative; transition:transform 0.2s, box-shadow 0.2s;
+    }
+    .ind-card:hover { transform:translateY(-4px); box-shadow:0 10px 28px rgba(0,0,0,0.10); }
+    .ind-card-label {
+      font-size:0.65rem; font-weight:700; letter-spacing:0.1em;
+      text-transform:uppercase; color:#1e8449; margin-bottom:6px;
+    }
+    .ind-card-name { font-size:0.88rem; font-weight:700; color:var(--dark); line-height:1.4; }
+    .ind-card-source { font-size:0.68rem; color:var(--text-light); margin-top:6px; }
+    .ind-card-arrow {
+      position:absolute; right:1rem; bottom:1rem;
+      font-size:1rem; color:#1e8449; opacity:0.5;
+      transition:opacity 0.2s, transform 0.2s;
+    }
+    .ind-card:hover .ind-card-arrow { opacity:1; transform:translateX(3px); }
+
+    .dim-tabs {
+      display:flex; gap:0.5rem; margin-bottom:1.2rem; flex-wrap:wrap;
+    }
+    .dim-tab {
+      background:var(--primary-dark); color:#fff; border:none; cursor:pointer;
+      padding:0.55rem 1.3rem; border-radius:8px; font-size:0.85rem; font-weight:700;
+      font-family:'Sora',sans-serif; transition:background 0.2s, transform 0.15s;
+    }
+    .dim-tab:hover { background:var(--primary-light); transform:translateY(-1px); }
+    .dim-tab.active { background:var(--primary-dark); outline:2px solid var(--primary-light); }
+    .tab-panel { visibility:hidden; height:0; overflow:hidden; pointer-events:none; }
+    .tab-panel.active { visibility:visible; height:auto; overflow:visible; pointer-events:auto; }
+    .tab-iframe-wrap { width:100%; border-radius:12px; overflow:hidden; position:relative; line-height:0; }
+    .tab-iframe { width:100%; height:850px; border:none; display:block; overflow:hidden; }
+
+    .section-card {
+      background:#fff; border-radius:16px; padding:2rem 2.5rem; margin-top:2rem;
+    }
+    .section-card h2 {
+      font-size:1rem; font-weight:800; color:var(--dark); margin-bottom:1.2rem;
+    }
+    .ext-list { display:flex; flex-direction:column; gap:0; }
+    .ext-item {
+      display:block; padding:0.75rem 0; color:var(--primary);
+      text-decoration:none; font-size:0.88rem; font-weight:600;
+      border-bottom:1px solid var(--border); transition:color 0.2s, transform 0.2s;
+    }
+    .ext-item:last-child { border-bottom:none; }
+    .ext-item:hover { color:var(--accent); transform:translateX(4px); }
+    .ref-list { list-style:none; padding:0; }
+    .ref-list li {
+      padding:0.5rem 0 0.5rem 1rem; border-bottom:1px solid var(--border);
+      font-size:0.88rem; color:var(--primary); line-height:1.6; position:relative;
+    }
+    .ref-list li::before { content:'•'; position:absolute; left:0; color:var(--primary); }
+    .ref-list li:last-child { border-bottom:none; }
+    .ref-list a { color:var(--primary); text-decoration:none; transition:color 0.2s; }
+    .ref-list a:hover { color:var(--accent); }
+
+    .contrib-section {
+      background:#fff; border-radius:16px; padding:2.5rem; margin-top:2rem;
+    }
+    .contrib-section h2 { font-size:1rem; font-weight:800; color:var(--dark); margin-bottom:1.5rem; }
+    .contrib-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;
+    }
+    .contrib-field { display:flex; flex-direction:column; gap:6px; }
+    .contrib-field label {
+      font-size:0.78rem; font-weight:700; color:var(--text); text-transform:uppercase; letter-spacing:0.08em;
+    }
+    .contrib-field input, .contrib-field textarea {
+      border:1.5px solid var(--border); border-radius:8px;
+      padding:0.6rem 0.9rem; font-family:'Sora',sans-serif;
+      font-size:0.88rem; color:var(--text); background:#fff;
+      transition:border-color 0.2s; outline:none;
+    }
+    .contrib-field input:focus, .contrib-field textarea:focus { border-color:var(--primary); }
+    .contrib-field textarea { resize:vertical; min-height:110px; }
+    .contrib-field-file { grid-column:1; }
+    .contrib-info {
+      display:flex; align-items:flex-start; gap:10px;
+      margin:1.2rem 0; font-size:0.82rem; color:var(--text-light); line-height:1.6;
+    }
+    .contrib-info-icon {
+      width:28px; height:28px; border-radius:50%; background:#1e844922;
+      color:#1e8449; font-weight:800; font-size:0.85rem;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .contrib-submit {
+      background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+      color:#fff; border:none; border-radius:50px;
+      padding:0.75rem 2.2rem; font-size:0.9rem; font-weight:700;
+      font-family:'Sora',sans-serif; cursor:pointer;
+      transition:background 0.2s, transform 0.15s;
+    }
+    .contrib-submit:hover { background:var(--primary); transform:translateY(-1px); }
+    .contrib-required { color:var(--accent); margin-left:2px; }
+    @keyframes modalIn {
+      from { opacity:0; transform:scale(0.92) translateY(10px); }
+      to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+    .contrib-field input.invalid,
+    .contrib-field textarea.invalid {
+      border-color:var(--accent) !important;
+      box-shadow:0 0 0 2px rgba(224,90,43,0.15);
+    }
+
+    .partners-bar { background:#f0f2f5; border-top:1px solid #dde3ea; padding:1.8rem 3rem; }
+    .partners-inner {
+      max-width:1400px; margin:0 auto;
+      display:grid; grid-template-columns:repeat(4,1fr); align-items:center;
+    }
+    .partner-group {
+      display:flex; flex-direction:column; gap:10px;
+      padding:0 2rem; border-right:1px solid #ccd4de;
+    }
+    .partner-group:first-child { padding-left:0; }
+    .partner-group:last-child { border-right:none; }
+    .partner-label { font-size:0.72rem; font-weight:600; color:#8a9aaa; text-transform:uppercase; letter-spacing:0.1em; }
+    .partner-logos { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .partner-logos a { display:flex; align-items:center; text-decoration:none; }
+    footer { background:#E05A2B; color:rgba(255,255,255,0.9); padding:4rem 3rem 2rem; }
+    .footer-inner { max-width:1400px; margin:0 auto; }
+    .footer-top {
+      display:grid; grid-template-columns:2fr 1fr 1fr 1fr;
+      gap:3rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(255,255,255,0.18);
+    }
+    .footer-brand p { font-size:0.85rem; line-height:1.7; color:rgba(255,255,255,0.55); max-width:280px; }
+    .footer-col h4 {
+      font-size:0.75rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:0.14em; color:#fff; margin-bottom:1rem;
+    }
+    .footer-col ul { list-style:none; }
+    .footer-col ul li { margin-bottom:0.6rem; }
+    .footer-col ul li a {
+      color:rgba(255,255,255,0.65); text-decoration:none; font-size:0.87rem; transition:color 0.2s;
+    }
+    .footer-col ul li a:hover { color:#fff; }
+    .footer-bottom {
+      display:flex; justify-content:space-between; align-items:center;
+      padding-top:1.8rem; font-size:0.78rem; color:rgba(255,255,255,0.5); flex-wrap:wrap; gap:0.5rem;
+    }
+    .footer-bottom a { color:rgba(255,255,255,0.5); text-decoration:none; }
+    .footer-bottom a:hover { color:#fff; }
+
+    @media(max-width:900px) {
+      nav { padding:0.8rem 1.2rem; } .nav-links { display:none; }
+      .dim-content { padding:2.5rem 1.2rem; }
+      .dim-hero { padding:2rem 1.2rem; }
+      .dim-indicators-grid { grid-template-columns:1fr 1fr; }
+      .footer-top { grid-template-columns:1fr 1fr; gap:2rem; }
+      .partners-inner { grid-template-columns:1fr 1fr; gap:1.5rem 0; }
+    }
+    @media(max-width:600px) {
+      nav { padding:0.75rem 1rem; } .nav-cta { display:none; }
+      #navBurger { display:flex !important; }
+      .dim-content { padding:2rem 1rem; }
+      .dim-hero { padding:1.5rem 1rem; }
+      .dim-indicators-grid { grid-template-columns:1fr; }
+      .contrib-grid { grid-template-columns:1fr; }
+      .footer-top { grid-template-columns:1fr; gap:1.8rem; }
+      .partners-inner { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <a class="logo" href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <img src="logo.png" alt="ODSB" style="height:38px;width:auto;object-fit:contain;">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#inicio">Início</a></li>
+      <li><a href="index.html#dimensoes">Dimensões</a></li>
+      <li><a href="index.html#galeria">Publicações</a></li>
+      <li><a href="colaboradores.html">Colaboradores</a></li>
+      <li><a href="sobre.html">Sobre</a></li>
+    </ul>
+    <a href="#" class="nav-cta">Acessar Dashboard</a>
+    <button id="navBurger" aria-label="Menu" style="display:none;background:none;border:none;cursor:pointer;padding:4px;flex-direction:column;gap:5px;">
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+    </button>
+  </nav>
+  <div id="mobileMenu" style="display:none;position:fixed;top:60px;left:0;right:0;background:rgba(255,255,255,0.98);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:999;padding:1rem 1.5rem 1.5rem;flex-direction:column;gap:0;">
+    <a href="index.html#inicio"    onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Início</a>
+    <a href="index.html#dimensoes" onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Dimensões</a>
+    <a href="index.html#galeria"   onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Publicações</a>
+    <a href="colaboradores.html"   onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Colaboradores</a>
+    <a href="sobre.html"           onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Sobre</a>
+    <a href="#" style="display:block;margin-top:1rem;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:0.8rem 1.5rem;border-radius:50px;font-weight:700;font-size:0.9rem;text-align:center;text-decoration:none;">Acessar Dashboard</a>
+  </div>
+</header>
+
+<!-- ══ MENU DIMENSÕES ══ -->
+<div class="dim-menu-wrap">
+  <div class="dim-menu">
+      <a href="economia.html" class="dim-nav-item " style="--dim-color:#c0392b; --dim-dark:#6b2018">
+        <div class="dim-nav-icon">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,26 12,16 18,20 28,8"/><polyline points="24,8 28,8 28,12"/><line x1="4" y1="30" x2="32" y2="30"/></svg>
+        </div>
+        <span>Economia e Mercado de Trabalho</span>
+      </a>
+      <a href="ambiente.html" class="dim-nav-item " style="--dim-color:#27ae60; --dim-dark:#1a6b30">
+        <div class="dim-nav-icon">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="18,3 24,13 12,13"/><polygon points="18,9 25,21 11,21"/><line x1="18" y1="21" x2="18" y2="27"/><polygon points="8,8 13,17 3,17"/><line x1="8" y1="17" x2="8" y2="22"/><polygon points="28,8 33,17 23,17"/><line x1="28" y1="17" x2="28" y2="22"/><line x1="2" y1="27" x2="34" y2="27"/></svg>
+        </div>
+        <span>Meio Ambiente e Saneamento</span>
+      </a>
+      <a href="educacao.html" class="dim-nav-item " style="--dim-color:#1B4F9B; --dim-dark:#0e2d6e">
+        <div class="dim-nav-icon">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14 L18 7 L32 14 L18 21 Z"/><path d="M26 17.5 L26 25 C26 25 22 28 18 28 C14 28 10 25 10 25 L10 17.5"/><line x1="32" y1="14" x2="32" y2="22"/></svg>
+        </div>
+        <span>Educação, Cultura, Esporte e Lazer</span>
+      </a>
+      <a href="mobilidade.html" class="dim-nav-item " style="--dim-color:#b7950b; --dim-dark:#5a4a00">
+        <div class="dim-nav-icon">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="12" width="26" height="14" rx="3"/><line x1="5" y1="18" x2="31" y2="18"/><line x1="14" y1="12" x2="14" y2="26"/><circle cx="11" cy="28" r="2"/><circle cx="25" cy="28" r="2"/></svg>
+        </div>
+        <span>Mobilidade</span>
+      </a>
+      <a href="territorio.html" class="dim-nav-item " style="--dim-color:#148f77; --dim-dark:#0e4a4a">
+        <div class="dim-nav-icon">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 5 L32 15 L32 31 L4 31 L4 15 Z"/><rect x="13" y="21" width="10" height="10"/><polyline points="4,15 18,5 32,15"/></svg>
+        </div>
+        <span>Ordenamento Territorial e Habitação</span>
+      </a>
+      <a href="seguranca.html" class="dim-nav-item active" style="--dim-color:#1e8449; --dim-dark:#0e5a28">
+        <div class="dim-nav-icon">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4 L30 9 L30 19 C30 25 24 30 18 32 C12 30 6 25 6 19 L6 9 Z"/><circle cx="18" cy="18" r="5"/><line x1="18" y1="13" x2="18" y2="11"/><line x1="18" y1="23" x2="18" y2="25"/><line x1="13" y1="18" x2="11" y2="18"/><line x1="23" y1="18" x2="25" y2="18"/></svg>
+        </div>
+        <span>Segurança</span>
+      </a>
+      <a href="saude.html" class="dim-nav-item " style="--dim-color:#922b21; --dim-dark:#5a1a1a">
+        <div class="dim-nav-icon">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 30 C18 30 6 22 6 14 C6 9 10 6 14 6 C16 6 18 8 18 8 C18 8 20 6 22 6 C26 6 30 9 30 14 C30 22 18 30 18 30Z"/><line x1="18" y1="14" x2="18" y2="22"/><line x1="14" y1="18" x2="22" y2="18"/></svg>
+        </div>
+        <span>Saúde</span>
+      </a>
+      <a href="conectividade.html" class="dim-nav-item " style="--dim-color:#2c3e7d; --dim-dark:#0d1a4e">
+        <div class="dim-nav-icon">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13 C10 7 26 7 32 13"/><path d="M8 18 C12 13 24 13 28 18"/><path d="M12 23 C14 20 22 20 24 23"/><circle cx="18" cy="29" r="2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <span>Conectividade</span>
+      </a>
+      <a href="instituicoes.html" class="dim-nav-item " style="--dim-color:#d35400; --dim-dark:#5a2a0a">
+        <div class="dim-nav-icon">
+          <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="31" x2="32" y2="31"/><rect x="10" y="18" width="5" height="13"/><rect x="21" y="18" width="5" height="13"/><rect x="13" y="9" width="10" height="9"/><polyline points="4,18 18,6 32,18"/></svg>
+        </div>
+        <span>Instituições Locais</span>
+      </a>
+  </div>
+</div>
+
+<!-- ══ HERO ══ -->
+<div class="dim-hero">
+  <div class="dim-hero-inner">
+    <div class="dim-hero-icon">
+      <svg viewBox="0 0 36 36" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4 L30 9 L30 19 C30 25 24 30 18 32 C12 30 6 25 6 19 L6 9 Z"/><circle cx="18" cy="18" r="5"/><line x1="18" y1="13" x2="18" y2="11"/><line x1="18" y1="23" x2="18" y2="25"/><line x1="13" y1="18" x2="11" y2="18"/><line x1="23" y1="18" x2="25" y2="18"/></svg>
+    </div>
+    <div style="flex:1;">
+      <span class="dim-hero-badge">Dimensão</span>
+      <div class="dim-hero-title">Segurança</div>
+    </div>
+    <a href="/pdfs/seguranca.pdf" download class="btn-pdf">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg>
+      Resumo da dimensão
+    </a>
+  </div>
+</div>
+
+<!-- ══ CONTEÚDO ══ -->
+<div class="dim-content">
+
+  <div class="dim-desc-card">
+    <p>A dimensão Segurança monitora os principais indicadores de violência e segurança pública em Barcarena, incluindo homicídios, roubos, furtos e a capacidade de atendimento das forças policiais no município. Localizado em uma região de intensa atividade econômica e com tensões sociais decorrentes do processo de industrialização, Barcarena apresenta dinâmicas de violência que exigem monitoramento contínuo. Os dados desta dimensão apoiam o planejamento de políticas de segurança pública e a alocação de recursos para prevenção e repressão à criminalidade.</p>
+  </div>
+
+  
+
+  <div class="dim-indicators-header" style="margin-top:0;">
+    <h2>Indicadores</h2>
+    <span class="ind-count">5 indicadores</span>
+  </div>
+  <div class="dim-indicators-grid">
+    <a class="ind-card" href="seguranca-homicidios.html">
+      <div class="ind-card-label">Indicador 01</div>
+      <div class="ind-card-name">Taxa de Homicídios (por 100 mil hab.)</div>
+      <div class="ind-card-source">Fonte: SINESP / SEJUSP-PA</div>
+      <div class="ind-card-arrow">→</div>
+    </a>
+    <a class="ind-card" href="seguranca-roubos.html">
+      <div class="ind-card-label">Indicador 02</div>
+      <div class="ind-card-name">Ocorrências de Roubo e Furto</div>
+      <div class="ind-card-source">Fonte: SINESP / SEJUSP-PA</div>
+      <div class="ind-card-arrow">→</div>
+    </a>
+    <a class="ind-card" href="seguranca-violencia.html">
+      <div class="ind-card-label">Indicador 03</div>
+      <div class="ind-card-name">Violência Doméstica e Feminicídio</div>
+      <div class="ind-card-source">Fonte: SEJUSP-PA / Ouvidoria</div>
+      <div class="ind-card-arrow">→</div>
+    </a>
+    <a class="ind-card" href="seguranca-efetivo.html">
+      <div class="ind-card-label">Indicador 04</div>
+      <div class="ind-card-name">Efetivo Policial e Cobertura Territorial</div>
+      <div class="ind-card-source">Fonte: SEGUP-PA</div>
+      <div class="ind-card-arrow">→</div>
+    </a>
+    <a class="ind-card" href="seguranca-menores.html">
+      <div class="ind-card-label">Indicador 05</div>
+      <div class="ind-card-name">Ocorrências Envolvendo Menores</div>
+      <div class="ind-card-source">Fonte: ECA / SEJUSP-PA</div>
+      <div class="ind-card-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="section-card">
+    <h2>Estudos Complementares</h2>
+    <div class="ext-list">
+      <a class="ext-item" href="https://www.ipea.gov.br/atlasviolencia/" target="_blank" rel="noopener">Atlas da Violência 2024 — IPEA</a>
+      <a class="ext-item" href="https://forumseguranca.org.br/" target="_blank" rel="noopener">Anuário Brasileiro de Segurança Pública 2024</a>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2>Referências</h2>
+    <ul class="ref-list">
+      <li><a href="https://www.gov.br/mj/pt-br/assuntos/sua-seguranca/seguranca-publica/sinesp-1" target="_blank" rel="noopener">SINESP — Sistema Nacional de Informações de Segurança Pública</a></li>
+      <li><a href="https://forumseguranca.org.br/" target="_blank" rel="noopener">Fórum Brasileiro de Segurança Pública</a></li>
+    </ul>
+  </div>
+
+  <!-- Formulário de contribuição -->
+  <div class="contrib-section">
+    <h2>Deixe aqui sua contribuição</h2>
+    <div class="contrib-grid">
+      <div class="contrib-field">
+        <label>Nome <span class="contrib-required">*</span></label>
+        <input id="contrib-nome" type="text" placeholder="Digite seu nome">
+      </div>
+      <div class="contrib-field" style="grid-row:span 2;">
+        <label>Comentário <span class="contrib-required">*</span></label>
+        <textarea id="contrib-comentario" placeholder="Digite seu comentário"></textarea>
+      </div>
+      <div class="contrib-field">
+        <label>E-mail <span class="contrib-required">*</span></label>
+        <input id="contrib-email" type="email" placeholder="exemplo@email.com">
+      </div>
+      <div class="contrib-field">
+        <label>Telefone <span class="contrib-required">*</span></label>
+        <input id="contrib-telefone" type="tel" placeholder="(00) 00000-0000" maxlength="15">
+      </div>
+      <div class="contrib-field contrib-field-file">
+        <label>Anexar Arquivo</label>
+        <input type="file">
+      </div>
+    </div>
+    <div class="contrib-info">
+      <div class="contrib-info-icon">i</div>
+      <span>Deixe um feedback ou um comentário para contribuir com a plataforma. Caso queira adicionar um dado interessante, anexe arquivos no botão indicado. (Máximo de 25mb)</span>
+    </div>
+    <button class="contrib-submit" onclick="validarContrib()">Enviar</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="contrib-modal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.45);" onclick="fecharModal()"></div>
+    <div style="position:relative;background:#fff;border-radius:16px;padding:2rem 2.2rem;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.25);text-align:center;animation:modalIn 0.25s ease-out;">
+      <div style="width:48px;height:48px;border-radius:50%;background:#fff4ee;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E05A2B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h3 id="modal-titulo" style="font-size:1rem;font-weight:800;color:#091C3A;margin-bottom:0.6rem;">Campos incompletos</h3>
+      <p id="modal-corpo" style="font-size:0.85rem;color:#5a7090;line-height:1.6;margin-bottom:1.4rem;">Agradecemos sua disposição em contribuir, mas ainda há campos obrigatórios não preenchidos.</p>
+      <button onclick="fecharModal()" style="background:linear-gradient(135deg,#E05A2B,#f07040);color:#fff;border:none;border-radius:50px;padding:0.6rem 1.8rem;font-size:0.88rem;font-weight:700;cursor:pointer;" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">Entendido</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ PARCEIROS ══ -->
+<div class="partners-bar">
+  <div class="partners-inner">
+    <div class="partner-group">
+      <span class="partner-label">Contato</span>
+      <a href="mailto:faleconosco@fundohydro.org" style="font-size:0.88rem;color:#1B4F9B;text-decoration:none;display:flex;align-items:center;gap:6px;font-weight:600;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B4F9B" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+        faleconosco@fundohydro.org
+      </a>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Realização</span>
+      <div class="partner-logos">
+        <a href="https://fundohydro.org/inicio" target="_blank" rel="noopener">
+          <img src="fundohydro.png" alt="Fundo Hydro" style="height:40px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Apoio</span>
+      <div class="partner-logos">
+        <a href="https://www.barcarenasustentavel.org/" target="_blank" rel="noopener">
+          <img src="ibs.png" alt="Iniciativa Barcarena Sustentável" style="height:44px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Execução</span>
+      <div class="partner-logos">
+        <a href="https://ufpa.br/" target="_blank" rel="noopener">
+          <img src="ufpa.png" alt="UFPA" style="height:52px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div style="margin-bottom:0.8rem;">
+          <img src="logo.png" alt="ODSB" style="height:40px;width:auto;object-fit:contain;filter:brightness(0) invert(1);">
+        </div>
+        <p>Produção, análise e difusão de dados sobre os indicadores do município de Barcarena, Pará. Uma iniciativa envolvendo o apoio do Fundo Hydro, UFPA e Transparência Pública para a melhoria da qualidade de vida em Barcarena.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Conteúdo</h4>
+        <ul>
+          <li><a href="#">Relatórios</a></li>
+          <li><a href="#">Indicadores</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="#">Pesquisas</a></li>
+          <li><a href="#">Legislação</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Observatório</h4>
+        <ul>
+          <li><a href="sobre.html">Sobre</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="#">Missão</a></li>
+          <li><a href="#">Parceiros</a></li>
+          <li><a href="#">Metodologia</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contato</h4>
+        <ul>
+          <li><a href="mailto:faleconosco@fundohydro.org">Email</a></li>
+          <li><a href="#">Redes Sociais</a></li>
+          <li><a href="#">Denúncias</a></li>
+          <li><a href="#">Privacidade</a></li>
+          <li><a href="#">Acessibilidade</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Observatório do Desenvolvimento Sustentável de Barcarena. Todos os direitos reservados.</span>
+      <a href="#">Política de Privacidade</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var burger = document.getElementById('navBurger');
+  var menu   = document.getElementById('mobileMenu');
+  if(!burger||!menu) return;
+  var open=false;
+  burger.addEventListener('click',function(){
+    open=!open; menu.style.display=open?'flex':'none';
+    var bars=burger.querySelectorAll('span');
+    if(open){ bars[0].style.transform='translateY(7px) rotate(45deg)'; bars[1].style.opacity='0'; bars[2].style.transform='translateY(-7px) rotate(-45deg)'; }
+    else{ bars[0].style.transform=''; bars[1].style.opacity=''; bars[2].style.transform=''; }
+  });
+  function closeMobileMenu(){ open=false; menu.style.display='none'; var bars=burger.querySelectorAll('span'); bars[0].style.transform=''; bars[1].style.opacity=''; bars[2].style.transform=''; }
+  window.closeMobileMenu=closeMobileMenu;
+})();
+
+function showTab(id, btn){
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.dim-tab').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+(function(){
+  var tel = document.getElementById('contrib-telefone');
+  if(!tel) return;
+  tel.addEventListener('input', function(){
+    var v = tel.value.replace(/\D/g,'').substring(0,11);
+    if(v.length <= 10)
+      tel.value = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, function(_,a,b,c){ return c ? '('+a+') '+b+'-'+c : b ? '('+a+') '+b : a ? '('+a : ''; });
+    else
+      tel.value = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, function(_,a,b,c){ return c ? '('+a+') '+b+'-'+c : b ? '('+a+') '+b : a ? '('+a : ''; });
+  });
+})();
+
+(function(){
+  var email = document.getElementById('contrib-email');
+  if(!email) return;
+  email.addEventListener('blur', function(){
+    var v=email.value.trim();
+    if(v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) email.classList.add('invalid');
+    else email.classList.remove('invalid');
+  });
+  email.addEventListener('input', function(){ email.classList.remove('invalid'); });
+})();
+
+function validarContrib(){
+  var nome=document.getElementById('contrib-nome');
+  var email=document.getElementById('contrib-email');
+  var telefone=document.getElementById('contrib-telefone');
+  var comentario=document.getElementById('contrib-comentario');
+  var camposVazios=false, emailInvalido=false, telInvalido=false;
+  [nome,email,telefone,comentario].forEach(function(c){ c.classList.remove('invalid'); });
+  if(!nome.value.trim()){ nome.classList.add('invalid'); camposVazios=true; }
+  if(!comentario.value.trim()){ comentario.classList.add('invalid'); camposVazios=true; }
+  var emailVal=email.value.trim();
+  if(!emailVal){ email.classList.add('invalid'); camposVazios=true; }
+  else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)){ email.classList.add('invalid'); emailInvalido=true; }
+  var telVal=telefone.value.replace(/\D/g,'');
+  if(!telVal){ telefone.classList.add('invalid'); camposVazios=true; }
+  else if(telVal.length<10){ telefone.classList.add('invalid'); telInvalido=true; }
+  if(camposVazios||emailInvalido||telInvalido){ abrirModal(camposVazios,emailInvalido,telInvalido); return; }
+  alert('Contribuição enviada! Obrigado.');
+}
+function abrirModal(camposVazios,emailInvalido,telInvalido){
+  var t=document.getElementById('modal-titulo');
+  var c=document.getElementById('modal-corpo');
+  if(emailInvalido&&telInvalido&&!camposVazios){
+    t.textContent='Verifique seus dados';
+    c.textContent='Agradecemos sua disposição em contribuir! O e-mail e o telefone parecem estar incorretos. Por favor, revise esses campos antes de enviar.';
+  } else if(emailInvalido&&!camposVazios){
+    t.textContent='Verifique o e-mail';
+    c.textContent='Agradecemos sua disposição em contribuir! O endereço de e-mail parece estar incorreto. Confira se digitou corretamente, por exemplo: nome@dominio.com.';
+  } else if(telInvalido&&!camposVazios){
+    t.textContent='Verifique o telefone';
+    c.textContent='Agradecemos sua disposição em contribuir! O número de telefone parece estar incompleto. Certifique-se de incluir o DDD e todos os dígitos.';
+  } else if(camposVazios&&(emailInvalido||telInvalido)){
+    t.textContent='Informações incompletas';
+    c.textContent='Agradecemos sua disposição em contribuir! Há campos obrigatórios não preenchidos e dados a revisar. Por favor, complete todas as informações antes de enviar.';
+  } else {
+    t.textContent='Campos incompletos';
+    c.textContent='Agradecemos sua disposição em contribuir, mas ainda há campos obrigatórios não preenchidos. Por favor, complete as informações antes de enviar.';
+  }
+  document.getElementById('contrib-modal').style.display='flex';
+}
+function fecharModal(){ document.getElementById('contrib-modal').style.display='none'; }
+</script>
+</body>
+</html>

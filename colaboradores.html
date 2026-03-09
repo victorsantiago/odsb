@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Colaboradores — Observatório de Barcarena</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #1B4F9B;
+      --primary-light: #2A6CC4;
+      --primary-dark: #0E3270;
+      --accent: #E05A2B;
+      --dark: #091C3A;
+      --light: #EEF2F8;
+      --text: #1a2a3a;
+      --text-light: #5a7090;
+      --border: #C8D8EE;
+      --green: #8DC63F;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Sora', sans-serif;
+      color: var(--text);
+      background: var(--light);
+      overflow-x: hidden;
+    }
+
+    /* ══ HEADER ══ */
+    header {
+      position: fixed; top: 0; width: 100%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      border-bottom: 1px solid var(--border);
+      animation: slideDown 0.6s ease-out;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity:0; }
+      to   { transform: translateY(0);    opacity:1; }
+    }
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.9rem 3rem; max-width: 1400px; margin: 0 auto;
+    }
+    .logo { text-decoration: none; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--text); font-weight: 500;
+      font-size: 0.9rem; position: relative; transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px; background: var(--accent); transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active { color: var(--primary); font-weight: 700; }
+    .nav-links a.active::after { width: 100%; background: var(--primary); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white; padding: 0.65rem 1.5rem; border-radius: 50px;
+      text-decoration: none; font-weight: 600; font-size: 0.88rem;
+      transition: all 0.3s; box-shadow: 0 4px 14px rgba(27,79,155,0.22);
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(27,79,155,0.3); }
+
+    /* ══ HERO ══ */
+    .page-hero {
+      margin-top: 64px;
+      background: linear-gradient(160deg, #060D20 0%, #0D1F40 55%, #0A1635 100%);
+      padding: 5rem 3rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 60%, rgba(27,79,155,0.25) 0%, transparent 70%);
+    }
+    .page-hero-eyebrow {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--green);
+      margin-bottom: 1rem; position: relative;
+    }
+    .page-hero h1 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800;
+      color: #fff; line-height: 1.2; max-width: 680px;
+      margin: 0 auto 1.2rem; position: relative;
+    }
+    .page-hero p {
+      font-size: 1rem; color: rgba(255,255,255,0.6);
+      max-width: 520px; margin: 0 auto; line-height: 1.75; position: relative;
+    }
+
+    /* ══ CONTEÚDO ══ */
+    .colabs-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 3rem;
+    }
+
+    /* Cabeçalho de grupo */
+    .group-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2.2rem;
+    }
+    .group-header .line {
+      flex: 1; height: 1px; background: var(--border);
+    }
+    .group-header h2 {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--text-light);
+      white-space: nowrap;
+    }
+
+    /* ── GRADE UNIFICADA ── */
+    .colabs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.4rem;
+      margin-bottom: 5rem;
+    }
+    .colab-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.5rem 1.4rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-left: 4px solid var(--accent);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .colab-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(224,90,43,0.12);
+    }
+    .colab-card.blue  { border-left-color: var(--primary); }
+    .colab-card.green { border-left-color: var(--green); }
+
+    /* Card consultor/apoio temporário */
+    .colab-card.consultant {
+      background: #f8f7f4;
+      border-left: 4px dashed #b8924a;
+      opacity: 0.92;
+    }
+    .colab-card.consultant:hover {
+      box-shadow: 0 10px 28px rgba(184,146,74,0.14);
+      opacity: 1;
+    }
+    .colab-card.consultant .colab-sub { color: #b8924a; }
+    .colab-card.consultant .colab-badge {
+      color: #7a5c1e;
+      background: rgba(184,146,74,0.12);
+    }
+    .colab-card.consultant .colab-temp-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 0.55rem;
+      font-size: 0.60rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #b8924a;
+      background: rgba(184,146,74,0.10);
+      border: 1px dashed rgba(184,146,74,0.45);
+      border-radius: 20px; padding: 2px 9px;
+    }
+    .colab-sub {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-light);
+      margin-bottom: 0.45rem; line-height: 1.4;
+    }
+    .colab-name {
+      font-size: 0.97rem; font-weight: 800; color: var(--dark);
+      line-height: 1.3; margin-bottom: 0.4rem;
+    }
+    .colab-info {
+      font-size: 0.8rem; color: var(--text-light); line-height: 1.5;
+    }
+    .colab-badge {
+      display: inline-block; margin-top: 0.65rem;
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--primary);
+      background: rgba(27,79,155,0.08); border-radius: 20px;
+      padding: 2px 10px;
+    }
+    /* Card destaque — coordenadora geral */
+    .colab-card.featured {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      border-left-color: #8DC63F;
+      grid-column: 1 / -1;
+    }
+    .colab-card.featured .colab-sub  { color: rgba(255,255,255,0.6); }
+    .colab-card.featured .colab-name { color: #fff; font-size: 1.15rem; }
+    .colab-card.featured .colab-info { color: rgba(255,255,255,0.65); }
+    .colab-card.featured .colab-badge {
+      color: #fff;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .colab-card.featured .colab-role-tag {
+      display: inline-block; margin-bottom: 0.5rem;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #8DC63F;
+    }
+
+    /* ══ PARCEIROS ══ */
+    .partners-bar {
+      background: #f0f2f5; border-top: 1px solid #dde3ea; padding: 1.8rem 3rem;
+    }
+    .partners-inner {
+      max-width: 1400px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0; align-items: center;
+    }
+    .partner-group {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 0 2rem; border-right: 1px solid #ccd4de;
+    }
+    .partner-group:first-child { padding-left: 0; }
+    .partner-group:last-child  { border-right: none; }
+    .partner-label {
+      font-size: 0.72rem; font-weight: 600; color: #8a9aaa;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .partner-logos { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .partner-logos a { display: flex; align-items: center; text-decoration: none; }
+
+    /* ══ FOOTER ══ */
+    footer {
+      background: #E05A2B; color: rgba(255,255,255,0.9); padding: 4rem 3rem 2rem;
+    }
+    .footer-inner { max-width: 1400px; margin: 0 auto; }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem; padding-bottom: 2.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+    }
+    .footer-brand p {
+      font-size: 0.85rem; line-height: 1.7;
+      color: rgba(255,255,255,0.55); max-width: 280px;
+    }
+    .footer-col h4 {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.14em; color: #fff; margin-bottom: 1rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.6rem; }
+    .footer-col ul li a {
+      color: rgba(255,255,255,0.65); text-decoration: none;
+      font-size: 0.87rem; transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 1.8rem; font-size: 0.78rem;
+      color: rgba(255,255,255,0.5); flex-wrap: wrap; gap: 0.5rem;
+    }
+    .footer-bottom a { color: rgba(255,255,255,0.5); text-decoration: none; }
+    .footer-bottom a:hover { color: #fff; }
+
+    /* ══ RESPONSIVE ══ */
+    @media(max-width:900px) {
+      nav { padding: 0.8rem 1.2rem; }
+      .nav-links { display: none; }
+      .colabs-grid { grid-template-columns: 1fr 1fr; }
+      .colabs-wrap { padding: 3rem 1.5rem; }
+      .partners-inner { grid-template-columns: 1fr 1fr; gap: 1.5rem 0; }
+      .partner-group { padding: 0 1.2rem; border-right: none; border-bottom: 1px solid #ccd4de; padding-bottom: 1.2rem; }
+      .partner-group:nth-child(odd)  { padding-left: 0; }
+      .partner-group:nth-child(even) { padding-right: 0; }
+      .partner-group:nth-last-child(-n+2) { border-bottom: none; padding-bottom: 0; }
+      footer { padding: 3rem 1.2rem 1.5rem; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    }
+    @media(max-width:600px) {
+      nav { padding: 0.75rem 1rem; }
+      .nav-cta { display: none; }
+      #navBurger { display: flex !important; }
+      .page-hero { padding: 3.5rem 1rem 3rem; }
+      .colabs-wrap { padding: 2.5rem 1rem; }
+      .colabs-grid { grid-template-columns: 1fr; }
+      .partners-inner { grid-template-columns: 1fr; gap: 0; }
+      .partner-group { padding: 1rem 0 !important; border-right: none !important; border-bottom: 1px solid #ccd4de; }
+      .partner-group:last-child { border-bottom: none; }
+      footer { padding: 2.5rem 1rem 1.5rem; }
+      .footer-top { grid-template-columns: 1fr; gap: 1.8rem; }
+      .footer-brand p { max-width: 100%; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <nav>
+    <a class="logo" href="index.html" style="display:flex;align-items:center;gap:10px;">
+      <img src="logo.png" alt="ODSB" style="height:38px;width:auto;object-fit:contain;">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#inicio">Início</a></li>
+      <li><a href="index.html#dimensoes">Dimensões</a></li>
+      <li><a href="index.html#galeria">Publicações</a></li>
+      <li><a href="colaboradores.html" class="active">Colaboradores</a></li>
+      <li><a href="sobre.html">Sobre</a></li>
+    </ul>
+    <a href="#" class="nav-cta">Acessar Dashboard</a>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" style="display:none;background:none;border:none;cursor:pointer;padding:4px;flex-direction:column;gap:5px;">
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+    </button>
+  </nav>
+  <div id="mobileMenu" style="display:none;position:fixed;top:60px;left:0;right:0;background:rgba(255,255,255,0.98);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:999;padding:1rem 1.5rem 1.5rem;flex-direction:column;gap:0;">
+    <a href="index.html#inicio"    onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Início</a>
+    <a href="index.html#dimensoes" onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Dimensões</a>
+    <a href="index.html#galeria"   onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Publicações</a>
+    <a href="#"                    onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Colaboradores</a>
+    <a href="sobre.html"           onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Sobre</a>
+    <a href="#" style="display:block;margin-top:1rem;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:0.8rem 1.5rem;border-radius:50px;font-weight:700;font-size:0.9rem;text-align:center;text-decoration:none;">Acessar Dashboard</a>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<section class="page-hero">
+  <div class="page-hero-eyebrow">Pessoas</div>
+  <h1>Colaboradores</h1>
+  <p>Especialistas, pesquisadores e desenvolvedores que tornam o ODSB possível.</p>
+</section>
+
+<!-- ══ CONTEÚDO ══ -->
+<div class="colabs-wrap">
+
+  <!-- ESPECIALISTAS -->
+  <div class="group-header">
+    <div class="line"></div>
+    <h2>Especialistas da Área</h2>
+    <div class="line"></div>
+  </div>
+  <div class="colabs-grid">
+    <div class="colab-card featured">
+      <div class="colab-role-tag">✦ Coordenadora Geral do Projeto</div>
+      <div class="colab-sub">Instituições Locais</div>
+      <div class="colab-name">Profa. Dra. Maria Amélia Enriquez</div>
+      <div class="colab-info">ICSA — Instituto de Ciências Sociais Aplicadas</div>
+      <span class="colab-badge">ICSA · UFPA</span>
+    </div>
+    <div class="colab-card blue">
+      <div class="colab-sub">Economia e Mercado de Trabalho</div>
+      <div class="colab-name">Profa. Dra. Ana Elizabeth Neirão Reymão</div>
+      <div class="colab-info">ICSA — Instituto de Ciências Sociais Aplicadas</div>
+      <span class="colab-badge">ICSA · UFPA</span>
+    </div>
+    <div class="colab-card blue">
+      <div class="colab-sub">Meio Ambiente e Saneamento</div>
+      <div class="colab-name">Profa. Dra. Marinalva Maciel</div>
+      <div class="colab-info">ICEN — Instituto de Ciências Exatas e Naturais</div>
+      <span class="colab-badge">ICEN · UFPA</span>
+    </div>
+    <div class="colab-card blue">
+      <div class="colab-sub">Educação, Cultura, Esporte e Lazer</div>
+      <div class="colab-name">Prof. Dr. Héliton Ribeiro Tavares</div>
+      <div class="colab-info">ICEN — Instituto de Ciências Exatas e Naturais</div>
+      <span class="colab-badge">ICEN · UFPA</span>
+    </div>
+    <div class="colab-card blue">
+      <div class="colab-sub">Mobilidade</div>
+      <div class="colab-name">B.Sc. Raimundo Jorge Pires Bastos</div>
+      <div class="colab-info">SEMOB — Secretaria Municipal de Mobilidade Urbana</div>
+      <span class="colab-badge">SEMOB</span>
+    </div>
+    <div class="colab-card blue">
+      <div class="colab-sub">Ordenamento Territorial e Habitação</div>
+      <div class="colab-name">Prof. Dr. José Júlio Ferreira Lima</div>
+      <div class="colab-info">ITEC — Instituto de Tecnologia</div>
+      <span class="colab-badge">ITEC · UFPA</span>
+    </div>
+    <div class="colab-card blue">
+      <div class="colab-sub">Segurança</div>
+      <div class="colab-name">MSc. Coronel Daniel Neves</div>
+      <div class="colab-info">Polícia Militar do Pará</div>
+      <span class="colab-badge">PM-PA</span>
+    </div>
+    <div class="colab-card blue">
+      <div class="colab-sub">Saúde</div>
+      <div class="colab-name">Prof. Dr. João Marcelo Brazão Protázio</div>
+      <div class="colab-info">ICEN — Instituto de Ciências Exatas e Naturais</div>
+      <span class="colab-badge">ICEN · UFPA</span>
+    </div>
+    <div class="colab-card blue">
+      <div class="colab-sub">Conectividade</div>
+      <div class="colab-name">Prof. Dr. Victor Hugo S. C. Pinto</div>
+      <div class="colab-info">ICEN — Instituto de Ciências Exatas e Naturais</div>
+      <span class="colab-badge">ICEN · UFPA</span>
+    </div>
+
+  </div>
+
+  <!-- TIME DE DESENVOLVIMENTO -->
+  <div class="group-header">
+    <div class="line"></div>
+    <h2>Time de Desenvolvimento</h2>
+    <div class="line"></div>
+  </div>
+  <div class="colabs-grid">
+    <div class="colab-card green">
+      <div class="colab-sub">Coordenação do Desenvolvimento da Plataforma</div>
+      <div class="colab-name">Dr. Victor Hugo S. C. Pinto</div>
+      <div class="colab-info">Professor na Faculdade de Computação | ICEN</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+    <div class="colab-card green">
+      <div class="colab-sub">Full Stack</div>
+      <div class="colab-name">Mário Roberto Lima Pinto</div>
+      <div class="colab-info">Estudante de Graduação em Ciência da Computação</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+    <div class="colab-card green">
+      <div class="colab-sub">Back End</div>
+      <div class="colab-name">Davison dos Santos Logan Cardoso</div>
+      <div class="colab-info">Estudante de Graduação em Ciência da Computação</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+    <div class="colab-card green">
+      <div class="colab-sub">Front End</div>
+      <div class="colab-name">Luiz Jordanny de Sousa da Silva</div>
+      <div class="colab-info">Estudante de Graduação em Ciência da Computação</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+    <div class="colab-card green">
+      <div class="colab-sub">Back End</div>
+      <div class="colab-name">Victor Hugo Goncalves de Oliveira</div>
+      <div class="colab-info">Estudante de Graduação em Ciência da Computação</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+    <div class="colab-card green">
+      <div class="colab-sub">Dados</div>
+      <div class="colab-name">João Pedro Souza Arruda</div>
+      <div class="colab-info">Estudante de Graduação em Ciência da Computação</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+  </div>
+
+  <!-- ALUNOS PESQUISADORES -->
+  <div class="group-header">
+    <div class="line"></div>
+    <h2>Alunos Pesquisadores</h2>
+    <div class="line"></div>
+  </div>
+  <div class="colabs-grid">
+    <div class="colab-card">
+      <div class="colab-name">Ana Beatrice da Silva Santana</div>
+      <div class="colab-info">Estudante de Graduação em Ciências Econômicas</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+    <div class="colab-card">
+      <div class="colab-name">Breno Cauã Rodrigues da Silva</div>
+      <div class="colab-info">Estudante de Graduação em Estatística</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+    <div class="colab-card">
+      <div class="colab-name">Éder Amoras Melo</div>
+      <div class="colab-info">Estudante de Pós-Graduação do PPGME</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+    <div class="colab-card">
+      <div class="colab-name">Kevin Jesus Neves Oliveira</div>
+      <div class="colab-info">Estudante de Graduação em Ciências Econômicas</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+    <div class="colab-card">
+      <div class="colab-name">Vitor Samuel Moraes dos Santos</div>
+      <div class="colab-info">Estudante de Graduação em Ciências Econômicas</div>
+      <span class="colab-badge">UFPA</span>
+    </div>
+  </div>
+
+</div><!-- /colabs-wrap -->
+
+<!-- ══ BARRA DE PARCEIROS ══ -->
+<div class="partners-bar">
+  <div class="partners-inner">
+    <div class="partner-group">
+      <span class="partner-label">Contato</span>
+      <a href="/cdn-cgi/l/email-protection#1a7c7b767f797574756979755a7c6f747e7572637e68753475687d" style="font-size:0.88rem;color:#1B4F9B;text-decoration:none;display:flex;align-items:center;gap:6px;font-weight:600;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B4F9B" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+        faleconosco&#64;fundohydro.org
+      </a>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Realização</span>
+      <div class="partner-logos">
+        <a href="https://fundohydro.org/inicio" target="_blank" rel="noopener">
+          <img src="fundohydro.png" alt="Hydro · ALBRAS · Fundo Hydro" style="height:40px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Apoio</span>
+      <div class="partner-logos">
+        <a href="https://www.barcarenasustentavel.org/" target="_blank" rel="noopener" title="Iniciativa Barcarena Sustentável">
+          <img src="ibs.png" alt="Iniciativa Barcarena Sustentável" style="height:44px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Execução</span>
+      <div class="partner-logos">
+        <a href="https://ufpa.br/" target="_blank" rel="noopener" title="UFPA">
+          <img src="ufpa.png" alt="UFPA" style="height:52px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div style="margin-bottom:0.8rem;">
+          <img src="logo.png" alt="ODSB" style="height:40px;width:auto;object-fit:contain;filter:brightness(0) invert(1);">
+        </div>
+        <p>Produção, análise e difusão de dados sobre os indicadores do município de Barcarena, Pará. Uma iniciativa envolvendo o apoio do Fundo Hydro, UFPA e Transparência Pública para a melhoria da qualidade de vida em Barcarena.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Conteúdo</h4>
+        <ul>
+          <li><a href="#">Relatórios</a></li>
+          <li><a href="#">Indicadores</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="#">Pesquisas</a></li>
+          <li><a href="#">Legislação</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Observatório</h4>
+        <ul>
+          <li><a href="sobre.html">Sobre</a></li>
+          <li><a href="colaboradores.html" style="color:#fff;font-weight:700;">Colaboradores</a></li>
+          <li><a href="#">Missão</a></li>
+          <li><a href="#">Parceiros</a></li>
+          <li><a href="#">Metodologia</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contato</h4>
+        <ul>
+          <li><a href="/cdn-cgi/l/email-protection#98fef9f4fdfbf7f6f7ebfbf7d8feedf6fcf7f0e1fceaf7b6f7eaff">Email</a></li>
+          <li><a href="#">Redes Sociais</a></li>
+          <li><a href="#">Denúncias</a></li>
+          <li><a href="#">Privacidade</a></li>
+          <li><a href="#">Acessibilidade</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Observatório do Desenvolvimento Sustentável de Barcarena. Todos os direitos reservados.</span>
+      <a href="#">Política de Privacidade</a>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+(function(){
+  var burger = document.getElementById('navBurger');
+  var menu   = document.getElementById('mobileMenu');
+  if(!burger || !menu) return;
+  var open = false;
+  burger.addEventListener('click', function(){
+    open = !open;
+    menu.style.display = open ? 'flex' : 'none';
+    var bars = burger.querySelectorAll('span');
+    if(open){
+      bars[0].style.transform = 'translateY(7px) rotate(45deg)';
+      bars[1].style.opacity = '0';
+      bars[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+    } else {
+      bars[0].style.transform = '';
+      bars[1].style.opacity = '';
+      bars[2].style.transform = '';
+    }
+  });
+  function closeMobileMenu(){
+    open = false; menu.style.display = 'none';
+    var bars =

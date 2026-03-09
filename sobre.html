@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sobre — Observatório de Barcarena</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #1B4F9B;
+      --primary-light: #2A6CC4;
+      --primary-dark: #0E3270;
+      --accent: #E05A2B;
+      --dark: #091C3A;
+      --light: #EEF2F8;
+      --text: #1a2a3a;
+      --text-light: #5a7090;
+      --border: #C8D8EE;
+      --green: #8DC63F;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Sora', sans-serif;
+      color: var(--text);
+      background: var(--light);
+      overflow-x: hidden;
+    }
+
+    /* ══ HEADER ══ */
+    header {
+      position: fixed;
+      top: 0; width: 100%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      border-bottom: 1px solid var(--border);
+      animation: slideDown 0.6s ease-out;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity:0; }
+      to   { transform: translateY(0);    opacity:1; }
+    }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 3rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .logo {
+      font-size: 1.5rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; letter-spacing: -0.5px; text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--text); font-weight: 500; font-size: 0.9rem;
+      position: relative; transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px; background: var(--accent); transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active { color: var(--primary); font-weight: 700; }
+    .nav-links a.active::after { width: 100%; background: var(--primary); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white; padding: 0.65rem 1.5rem; border-radius: 50px;
+      text-decoration: none; font-weight: 600; font-size: 0.88rem;
+      transition: all 0.3s; box-shadow: 0 4px 14px rgba(27,79,155,0.22);
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(27,79,155,0.3); }
+
+    /* ══ HERO DA PÁGINA ══ */
+    .page-hero {
+      margin-top: 64px;
+      background: linear-gradient(160deg, #060D20 0%, #0D1F40 55%, #0A1635 100%);
+      padding: 5rem 3rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 60%, rgba(27,79,155,0.25) 0%, transparent 70%);
+    }
+    .page-hero-eyebrow {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--green); margin-bottom: 1rem;
+      position: relative;
+    }
+    .page-hero h1 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800;
+      color: #fff; line-height: 1.2; max-width: 760px; margin: 0 auto 1.2rem;
+      position: relative;
+    }
+    .page-hero p {
+      font-size: 1rem; color: rgba(255,255,255,0.6); max-width: 580px;
+      margin: 0 auto; line-height: 1.75; position: relative;
+    }
+
+    /* ══ CONTEÚDO PRINCIPAL ══ */
+    .about-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 3rem;
+    }
+
+    /* Seção intro: texto + foto */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      margin-bottom: 5rem;
+    }
+    .intro-text h2 {
+      font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 800;
+      color: var(--dark); margin-bottom: 1.5rem; line-height: 1.25;
+    }
+    .intro-text p {
+      font-size: 0.95rem; color: var(--text-light);
+      line-height: 1.8; margin-bottom: 1.1rem;
+    }
+    .intro-img {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(9,28,58,0.18);
+      aspect-ratio: 4/3;
+      background: #cbd5e1;
+    }
+    .intro-img img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+
+    /* Objetivos — destaque */
+    .objetivo-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2.5rem 3rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      border-left: 5px solid var(--primary);
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-bottom: 5rem;
+    }
+    .objetivo-label {
+      font-size: 1.6rem; font-weight: 800; color: var(--primary);
+      text-align: center;
+    }
+    .objetivo-card p {
+      font-size: 0.97rem; color: var(--text-light); line-height: 1.8;
+    }
+
+    /* Divisor de seção */
+    .sec-divider {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .sec-divider .eyebrow {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--green); margin-bottom: 0.5rem;
+    }
+    .sec-divider h2 {
+      font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 800; color: var(--dark);
+    }
+    .sec-divider p {
+      font-size: 0.95rem; color: var(--text-light); margin-top: 0.5rem;
+      max-width: 560px; margin-left: auto; margin-right: auto; line-height: 1.7;
+    }
+
+    /* Conceitos básicos — pirâmide + definições */
+    .concepts-section { margin-bottom: 5rem; }
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    /* Pirâmide SVG inline */
+    .pyramid-wrap { display: flex; justify-content: center; }
+
+    .concept-items { display: flex; flex-direction: column; gap: 1.8rem; }
+    .concept-item h3 {
+      font-size: 1.05rem; font-weight: 800; color: var(--dark); margin-bottom: 0.4rem;
+    }
+    .concept-item p { font-size: 0.92rem; color: var(--text-light); line-height: 1.75; }
+    .concept-item .tag {
+      display: inline-block; font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 2px 10px; border-radius: 20px; margin-bottom: 6px;
+      color: #fff;
+    }
+    .tag-dim  { background: var(--primary); }
+    .tag-ind  { background: var(--green); color: var(--dark); }
+    .tag-var  { background: var(--accent); }
+
+    /* Roda das dimensões */
+    .wheel-section {
+      background: #fff;
+      border-radius: 20px;
+      padding: 3.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      margin-bottom: 5rem;
+      text-align: center;
+    }
+    .wheel-section img {
+      max-width: 560px; width: 100%; margin: 2rem auto 0; display: block;
+    }
+    .dim-stats {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 0.6rem; margin-top: 2rem;
+    }
+    .dim-stat-chip {
+      background: var(--light); border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 0.75rem; font-weight: 600; color: var(--text-light);
+    }
+    .dim-stat-chip span { color: var(--primary); font-weight: 700; }
+
+    /* Fontes secundárias */
+    .fontes-section {
+      position: relative;
+      border-radius: 20px;
+      padding: 3.5rem;
+      margin-bottom: 5rem;
+      color: #fff;
+      overflow: hidden;
+    }
+    .fontes-section .parallax-bg {
+      position: absolute;
+      inset: -60px 0;
+      background:
+        linear-gradient(135deg, rgba(9,28,58,0.88) 0%, rgba(14,50,112,0.82) 100%),
+        url("fundosobre.jpg") center center / cover no-repeat;
+      background-attachment: fixed;
+      will-change: transform;
+      z-index: 0;
+    }
+    .fontes-section > * { position: relative; z-index: 1; }
+    .fontes-section h2 {
+      font-size: clamp(1.3rem, 2.2vw, 1.8rem); font-weight: 800;
+      margin-bottom: 1.5rem; color: #fff;
+    }
+    .fontes-section p {
+      font-size: 0.93rem; line-height: 1.85;
+      color: rgba(255,255,255,0.65);
+    }
+    .fontes-sources {
+      display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.8rem;
+    }
+    .source-tag {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px; padding: 5px 12px;
+      font-size: 0.75rem; font-weight: 600;
+      color: rgba(255,255,255,0.75); font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* Metodologia + Definição da Base */
+    .metodo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      margin-bottom: 5rem;
+    }
+    .metodo-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem 2rem 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .metodo-card h2 {
+      font-size: 1.1rem; font-weight: 800; color: var(--dark);
+      margin-bottom: 1rem;
+    }
+    .metodo-card p {
+      font-size: 0.9rem; color: var(--text-light); line-height: 1.8;
+      margin-bottom: 0.8rem;
+    }
+    .metodo-card ul {
+      padding-left: 1.2rem; margin-top: 0.5rem;
+    }
+    .metodo-card ul li {
+      font-size: 0.88rem; color: var(--text-light); line-height: 1.75;
+      margin-bottom: 0.5rem;
+    }
+    .metodo-card ul li::marker { color: var(--green); }
+
+    /* ══ PARCEIROS ══ */
+    .partners-bar {
+      background: #f0f2f5;
+      border-top: 1px solid #dde3ea;
+      padding: 1.8rem 3rem;
+    }
+    .partners-inner {
+      max-width: 1400px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 0; align-items: center;
+    }
+    .partner-group {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 0 2rem; border-right: 1px solid #ccd4de;
+    }
+    .partner-group:first-child { padding-left: 0; }
+    .partner-group:last-child  { border-right: none; }
+    .partner-label {
+      font-size: 0.72rem; font-weight: 600; color: #8a9aaa;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .partner-logos { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .partner-logos a { display: flex; align-items: center; text-decoration: none; }
+
+    /* ══ FOOTER ══ */
+    footer {
+      background: #E05A2B;
+      color: rgba(255,255,255,0.9);
+      padding: 4rem 3rem 2rem;
+    }
+    .footer-inner { max-width: 1400px; margin: 0 auto; }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem; padding-bottom: 2.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+    }
+    .footer-brand p {
+      font-size: 0.85rem; line-height: 1.7;
+      color: rgba(255,255,255,0.55); max-width: 280px;
+    }
+    .footer-col h4 {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.14em; color: #fff; margin-bottom: 1rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.6rem; }
+    .footer-col ul li a {
+      color: rgba(255,255,255,0.65); text-decoration: none;
+      font-size: 0.87rem; transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 1.8rem; font-size: 0.78rem;
+      color: rgba(255,255,255,0.5); flex-wrap: wrap; gap: 0.5rem;
+    }
+    .footer-bottom a { color: rgba(255,255,255,0.5); text-decoration: none; }
+    .footer-bottom a:hover { color: #fff; }
+
+    /* ══ RESPONSIVE ══ */
+    @media(max-width:900px) {
+      nav { padding: 0.8rem 1.2rem; }
+      .nav-links { display: none; }
+      .intro-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .concepts-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .metodo-grid { grid-template-columns: 1fr; }
+      .objetivo-card { grid-template-columns: 1fr; gap: 1.5rem; text-align: center; }
+      .partners-bar { padding: 1.5rem 1.2rem; }
+      .partners-inner { grid-template-columns: 1fr 1fr; gap: 1.5rem 0; }
+      .partner-group { padding: 0 1.2rem; border-right: none; border-bottom: 1px solid #ccd4de; padding-bottom: 1.2rem; }
+      .partner-group:nth-child(odd)  { padding-left: 0; }
+      .partner-group:nth-child(even) { padding-right: 0; }
+      .partner-group:nth-last-child(-n+2) { border-bottom: none; padding-bottom: 0; }
+      footer { padding: 3rem 1.2rem 1.5rem; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .about-wrap { padding: 3rem 1.5rem; }
+      .wheel-section { padding: 2rem 1.2rem; }
+      .fontes-section { padding: 2rem 1.5rem; }
+    }
+    @media(max-width:600px) {
+      nav { padding: 0.75rem 1rem; }
+      .nav-cta { display: none; }
+      #navBurger { display: flex !important; }
+      .page-hero { padding: 3.5rem 1rem 3rem; }
+      .about-wrap { padding: 2.5rem 1rem; }
+      .partners-bar { padding: 1.2rem 1rem; }
+      .partners-inner { grid-template-columns: 1fr; gap: 0; }
+      .partner-group { padding: 1rem 0 !important; border-right: none !important; border-bottom: 1px solid #ccd4de; }
+      .partner-group:last-child { border-bottom: none; }
+      footer { padding: 2.5rem 1rem 1.5rem; }
+      .footer-top { grid-template-columns: 1fr; gap: 1.8rem; }
+      .footer-brand p { max-width: 100%; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    }
+
+    /* ══ MANDALA ══ */
+    .mandala-container {
+      position: relative;
+      max-width: 560px;
+      margin: 2rem auto 0;
+    }
+    .dim-slice { cursor: pointer; transition: filter 0.2s; }
+    .dim-slice .outer-slice,
+    .dim-slice .inner-slice {
+      transition: opacity 0.2s, transform 0.25s;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .dim-slice:hover .outer-slice { opacity: 0.85; filter: brightness(1.15); }
+    .dim-slice:hover .inner-slice { opacity: 0.95; filter: brightness(1.1); }
+
+    /* Painel de info ao hover */
+    .mandala-tooltip {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(9,28,58,0.92);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 14px;
+      padding: 1rem 1.3rem;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      min-width: 140px;
+      z-index: 10;
+    }
+    .mandala-tooltip.visible { opacity: 1; }
+    .mandala-tooltip .tt-name {
+      font-size: 0.8rem; font-weight: 700; color: #fff;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;
+    }
+    .mandala-tooltip .tt-ind {
+      font-size: 1.6rem; font-weight: 800; color: #8DC63F;
+      font-family: 'IBM Plex Mono', monospace; line-height: 1;
+    }
+    .mandala-tooltip .tt-label {
+      font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <nav>
+    <a class="logo" href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <img src="logo.png" alt="ODSB" style="height:38px;width:auto;object-fit:contain;">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#inicio">Início</a></li>
+      <li><a href="index.html#dimensoes">Dimensões</a></li>
+      <li><a href="index.html#galeria">Publicações</a></li>
+      <li><a href="colaboradores.html">Colaboradores</a></li>
+      <li><a href="sobre.html" class="active">Sobre</a></li>
+    </ul>
+    <a href="#" class="nav-cta">Acessar Dashboard</a>
+    <button class="nav-burger" id="navBurger" aria-label="Menu" style="display:none;background:none;border:none;cursor:pointer;padding:4px;flex-direction:column;gap:5px;">
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+    </button>
+  </nav>
+  <div id="mobileMenu" style="display:none;position:fixed;top:60px;left:0;right:0;background:rgba(255,255,255,0.98);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:999;padding:1rem 1.5rem 1.5rem;flex-direction:column;gap:0;">
+    <a href="index.html#inicio" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Início</a>
+    <a href="index.html#dimensoes" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Dimensões</a>
+    <a href="index.html#galeria" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Publicações</a>
+    <a href="#" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Colaboradores</a>
+    <a href="sobre.html" style="display:block;padding:0.75rem 0;color:var(--primary);text-decoration:none;font-weight:700;font-size:0.95rem;border-bottom:1px solid #eee;">Sobre</a>
+    <a href="#" style="display:block;margin-top:1rem;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:0.8rem 1.5rem;border-radius:50px;font-weight:700;font-size:0.9rem;text-align:center;text-decoration:none;">Acessar Dashboard</a>
+  </div>
+</header>
+
+<!-- ══ HERO DA PÁGINA ══ -->
+<section class="page-hero">
+  <div class="page-hero-eyebrow">Quem somos</div>
+  <h1>Observatório do Desenvolvimento Sustentável de Barcarena</h1>
+  <p>Conheça o ODSB — sua missão, metodologia, dimensões e as fontes que sustentam nossas análises.</p>
+</section>
+
+<!-- ══ CONTEÚDO ══ -->
+<div class="about-wrap">
+
+  <!-- 1. Introdução -->
+  <div class="intro-grid">
+    <div class="intro-text">
+      <h2>O que é o ODSB?</h2>
+      <p>O ODSB objetiva desenvolver um Sistema de Informações para o município de Barcarena, integrando diversas dimensões do desenvolvimento sustentável. Esse sistema será atualizado periodicamente com dados extraídos de fontes de órgãos de controle e pesquisa, como IBGE, IPEAData, Atlas da Violência, Secretaria da Fazenda (SEFA), Fundação de Pesquisa do Estado do Pará (Fapespa), Datasus, Secretaria de Comércio Exterior do Ministério da Economia, Tribunal de Contas dos Municípios (TCM), Índice de Desenvolvimento Sustentável das Cidades (IDSC), Secretarias municipais de Barcarena, além de relatórios e balanços anuais de empresas atuantes no município, entre outras bases confiáveis.</p>
+      <p>O sistema deve oferecer boletins periódicos (relatórios dinâmicos) e dashboards que refletirão o status dos principais indicadores de desenvolvimento municipal. Além disso, será capaz de associar esses indicadores a variáveis socioeconômicas, tecnológicas e ambientais, possibilitando a elaboração de boletins analíticos. Esses boletins revelarão a relação entre a dinâmica do desenvolvimento municipal e o desempenho das nove dimensões cobertas pelo observatório.</p>
+    </div>
+    <div class="intro-img">
+      <img src="time.jpg" alt="Equipe do ODSB">
+    </div>
+  </div>
+
+  <!-- 2. Objetivos -->
+  <div class="objetivo-card">
+    <div class="objetivo-label">Objetivos</div>
+    <p>O ODSB será uma ferramenta indispensável tanto para o estabelecimento das metas do Fundo de Sustentabilidade Hydro, assim como base para o planejamento estratégico da Iniciativa Barcarena Sustentável (IBS), além de servir como instrumento de pesquisa e estudo que dará o suporte às ações dos parceiros no município de Barcarena, inclusive do poder público e de entidades da sociedade civil.</p>
+  </div>
+
+  <!-- 3. Conceitos Básicos -->
+  <div class="concepts-section">
+    <div class="sec-divider">
+      <div class="eyebrow">Fundamentos</div>
+      <h2>Conceitos Básicos — Dimensão, Indicadores e Variáveis</h2>
+    </div>
+    <div class="concepts-grid">
+      <div class="pyramid-wrap">
+        <svg width="320" height="280" viewBox="0 0 320 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Variáveis (base) — laranja -->
+          <polygon points="20,260 300,260 240,170 80,170" fill="#E05A2B" opacity="0.92"/>
+          <!-- Indicadores (meio) — verde médio -->
+          <polygon points="80,170 240,170 195,95 125,95" fill="#3d7a2e" opacity="0.9"/>
+          <!-- Dimensão (topo) — azul -->
+          <polygon points="125,95 195,95 160,28" fill="#1B4F9B" opacity="0.95"/>
+          <!-- Bordas -->
+          <polygon points="20,260 300,260 160,28" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
+          <line x1="80" y1="170" x2="240" y2="170" stroke="white" stroke-width="1" opacity="0.3"/>
+          <line x1="125" y1="95" x2="195" y2="95" stroke="white" stroke-width="1" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="concept-items">
+        <div class="concept-item">
+          <span class="tag tag-dim">Dimensão</span>
+          <p>Refere-se a uma categoria ou aspecto específico do fenômeno a ser analisado, como a Educação de Barcarena. Assim, a dimensão é o campo de estudo sob o qual as informações serão organizadas.</p>
+        </div>
+        <div class="concept-item">
+          <span class="tag tag-ind">Indicadores</span>
+          <p>São métricas específicas que permitem medir ou avaliar o desempenho dentro de uma dimensão. Por exemplo, na dimensão "educação", um indicador poderia ser a "taxa de alfabetização".</p>
+        </div>
+        <div class="concept-item">
+          <span class="tag tag-var">Variáveis</span>
+          <p>São os dados ou atributos que alimentam os indicadores, como idade, gênero, ou localização geográfica. Elas fornecem os detalhes necessários para calcular ou definir o valor de um indicador.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Roda das Dimensões -->
+  <div class="wheel-section">
+    <div class="sec-divider" style="margin-bottom:0">
+      <div class="eyebrow">Abrangência</div>
+      <h2>As 9 Dimensões do ODSB</h2>
+      <p>O observatório cobre nove dimensões do desenvolvimento sustentável, totalizando mais de 80 indicadores municipais.</p>
+    </div>
+    <div class="mandala-container">
+      <svg id="mandala-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:560px;display:block;margin:0 auto;filter:drop-shadow(0 8px 32px rgba(0,0,0,0.15));">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Anel de fundo -->
+  <circle cx="300" cy="300" r="274" fill="rgba(255,255,255,0.04)" stroke="#e0e8f0" stroke-width="1"/>
+  
+  <g class="dim-slice" id="dim0" data-name="Economia" data-ind="13">
+    <!-- Fatia externa -->
+    <path d="M 303.534 30.023 A 270 270 0 0 1 470.830 90.914 L 410.723 164.481 A 175 175 0 0 0 302.291 125.015 Z" fill="#E07B3A" class="outer-slice" stroke="white" stroke-width="2"/>
+    <!-- Fatia interna -->
+    <path d="M 302.291 125.015 A 175 175 0 0 1 410.723 164.481 L 356.943 230.305 A 90 90 0 0 0 301.178 210.008 Z" fill="#E07B3Acc" class="inner-slice" stroke="white" stroke-width="1.5"/>
+    <!-- Ícone (SVG scalado) -->
+    <g transform="translate(333.3,163.5) scale(1)" opacity="0.9">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 20 L10 12 L14 16 L20 6  M20 6 L16 6 M20 6 L20 10"/>
+      </svg>
+    </g>
+    <!-- Tooltip invisível -->
+    <title>Economia · 13 indicadores</title>
+  </g>
+  <g class="dim-slice" id="dim1" data-name="Meio Ambiente" data-ind="6">
+    <!-- Fatia externa -->
+    <path d="M 476.245 95.457 A 270 270 0 0 1 565.262 249.639 L 471.929 267.358 A 175 175 0 0 0 414.233 167.426 Z" fill="#5DA84E" class="outer-slice" stroke="white" stroke-width="2"/>
+    <!-- Fatia interna -->
+    <path d="M 414.233 167.426 A 175 175 0 0 1 471.929 267.358 L 388.421 283.213 A 90 90 0 0 0 358.748 231.819 Z" fill="#5DA84Ecc" class="inner-slice" stroke="white" stroke-width="1.5"/>
+    <!-- Ícone (SVG scalado) -->
+    <g transform="translate(402.7,221.8) scale(1)" opacity="0.9">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3 C12 3 4 10 4 15 C4 19 7.5 22 12 22 C16.5 22 20 19 20 15 C20 10 12 3 12 3Z M12 22 L12 14 M12 17 C9 15 7 14 6 16"/>
+      </svg>
+    </g>
+    <!-- Tooltip invisível -->
+    <title>Meio Ambiente · 6 indicadores</title>
+  </g>
+  <g class="dim-slice" id="dim2" data-name="Educação" data-ind="6">
+    <!-- Fatia externa -->
+    <path d="M 566.489 256.600 A 270 270 0 0 1 535.574 431.928 L 452.687 385.509 A 175 175 0 0 0 472.724 271.870 Z" fill="#4A9A6A" class="outer-slice" stroke="white" stroke-width="2"/>
+    <!-- Fatia interna -->
+    <path d="M 472.724 271.870 A 175 175 0 0 1 452.687 385.509 L 378.525 343.976 A 90 90 0 0 0 388.830 285.533 Z" fill="#4A9A6Acc" class="inner-slice" stroke="white" stroke-width="1.5"/>
+    <!-- Ícone (SVG scalado) -->
+    <g transform="translate(418.5,311.0) scale(1)" opacity="0.9">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12 L12 5 L21 12 L21 20 L3 20 L3 12Z M9 20 L9 14 L15 14 L15 20"/>
+      </svg>
+    </g>
+    <!-- Tooltip invisível -->
+    <title>Educação · 6 indicadores</title>
+  </g>
+  <g class="dim-slice" id="dim3" data-name="Mobilidade" data-ind="5">
+    <!-- Fatia externa -->
+    <path d="M 532.040 438.049 A 270 270 0 0 1 395.659 552.487 L 362.001 463.649 A 175 175 0 0 0 450.396 389.476 Z" fill="#D4873A" class="outer-slice" stroke="white" stroke-width="2"/>
+    <!-- Fatia interna -->
+    <path d="M 450.396 389.476 A 175 175 0 0 1 362.001 463.649 L 331.886 384.162 A 90 90 0 0 0 377.347 346.016 Z" fill="#D4873Acc" class="inner-slice" stroke="white" stroke-width="1.5"/>
+    <!-- Ícone (SVG scalado) -->
+    <g transform="translate(373.2,389.5) scale(1)" opacity="0.9">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 14 L3 10 C3 8 5 6 7 6 L17 6 C19 6 21 8 21 10 L21 14 M1 14 L23 14 M6 18 A2 2 0 1 0 10 18 A2 2 0 1 0 6 18 M14 18 A2 2 0 1 0 18 18 A2 2 0 1 0 14 18"/>
+      </svg>
+    </g>
+    <!-- Tooltip invisível -->
+    <title>Mobilidade · 5 indicadores</title>
+  </g>
+  <g class="dim-slice" id="dim4" data-name="Habitação" data-ind="14">
+    <!-- Fatia externa -->
+    <path d="M 389.016 554.904 A 270 270 0 0 1 210.984 554.904 L 242.304 465.216 A 175 175 0 0 0 357.696 465.216 Z" fill="#3A7DC0" class="outer-slice" stroke="white" stroke-width="2"/>
+    <!-- Fatia interna -->
+    <path d="M 357.696 465.216 A 175 175 0 0 1 242.304 465.216 L 270.328 384.968 A 90 90 0 0 0 329.672 384.968 Z" fill="#3A7DC0cc" class="inner-slice" stroke="white" stroke-width="1.5"/>
+    <!-- Ícone (SVG scalado) -->
+    <g transform="translate(288.0,420.5) scale(1)" opacity="0.9">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3 L20 9 L20 20 L4 20 L4 9 Z M9 20 L9 14 L15 14 L15 20 M12 3 L4 9"/>
+      </svg>
+    </g>
+    <!-- Tooltip invisível -->
+    <title>Habitação · 14 indicadores</title>
+  </g>
+  <g class="dim-slice" id="dim5" data-name="Segurança" data-ind="17">
+    <!-- Fatia externa -->
+    <path d="M 204.341 552.487 A 270 270 0 0 1 67.960 438.049 L 149.604 389.476 A 175 175 0 0 0 237.999 463.649 Z" fill="#5BB87A" class="outer-slice" stroke="white" stroke-width="2"/>
+    <!-- Fatia interna -->
+    <path d="M 237.999 463.649 A 175 175 0 0 1 149.604 389.476 L 222.653 346.016 A 90 90 0 0 0 268.114 384.162 Z" fill="#5BB87Acc" class="inner-slice" stroke="white" stroke-width="1.5"/>
+    <!-- Ícone (SVG scalado) -->
+    <g transform="translate(202.8,389.5) scale(1)" opacity="0.9">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2 L20 6 L20 13 C20 17.5 16.5 21 12 22 C7.5 21 4 17.5 4 13 L4 6 Z M9 12 L11 14 L15 10"/>
+      </svg>
+    </g>
+    <!-- Tooltip invisível -->
+    <title>Segurança · 17 indicadores</title>
+  </g>
+  <g class="dim-slice" id="dim6" data-name="Saúde" data-ind="18">
+    <!-- Fatia externa -->
+    <path d="M 64.426 431.928 A 270 270 0 0 1 33.511 256.600 L 127.276 271.870 A 175 175 0 0 0 147.313 385.509 Z" fill="#48ABAA" class="outer-slice" stroke="white" stroke-width="2"/>
+    <!-- Fatia interna -->
+    <path d="M 147.313 385.509 A 175 175 0 0 1 127.276 271.870 L 211.170 285.533 A 90 90 0 0 0 221.475 343.976 Z" fill="#48ABAAcc" class="inner-slice" stroke="white" stroke-width="1.5"/>
+    <!-- Ícone (SVG scalado) -->
+    <g transform="translate(157.5,311.0) scale(1)" opacity="0.9">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21 C12 21 4 16 4 10 C4 6 7 3 10 3 C11 3 12 4 12 4 C12 4 13 3 14 3 C17 3 20 6 20 10 C20 16 12 21 12 21Z M12 10 L12 14 M10 12 L14 12"/>
+      </svg>
+    </g>
+    <!-- Tooltip invisível -->
+    <title>Saúde · 18 indicadores</title>
+  </g>
+  <g class="dim-slice" id="dim7" data-name="Conectividade" data-ind="5">
+    <!-- Fatia externa -->
+    <path d="M 34.738 249.639 A 270 270 0 0 1 123.755 95.457 L 185.767 167.426 A 175 175 0 0 0 128.071 267.358 Z" fill="#5EB5D4" class="outer-slice" stroke="white" stroke-width="2"/>
+    <!-- Fatia interna -->
+    <path d="M 128.071 267.358 A 175 175 0 0 1 185.767 167.426 L 241.252 231.819 A 90 90 0 0 0 211.579 283.213 Z" fill="#5EB5D4cc" class="inner-slice" stroke="white" stroke-width="1.5"/>
+    <!-- Ícone (SVG scalado) -->
+    <g transform="translate(173.3,221.8) scale(1)" opacity="0.9">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12.5 C7.5 9.5 16.5 9.5 19 12.5 M8 15.5 C9.5 13.5 14.5 13.5 16 15.5 M11 18.5 C11.5 17.5 12.5 17.5 13 18.5 M12 20 A0.5 0.5 0 1 0 13 20"/>
+      </svg>
+    </g>
+    <!-- Tooltip invisível -->
+    <title>Conectividade · 5 indicadores</title>
+  </g>
+  <g class="dim-slice" id="dim8" data-name="Instituições" data-ind="6">
+    <!-- Fatia externa -->
+    <path d="M 129.170 90.914 A 270 270 0 0 1 296.466 30.023 L 297.709 125.015 A 175 175 0 0 0 189.277 164.481 Z" fill="#3A65B0" class="outer-slice" stroke="white" stroke-width="2"/>
+    <!-- Fatia interna -->
+    <path d="M 189.277 164.481 A 175 175 0 0 1 297.709 125.015 L 298.822 210.008 A 90 90 0 0 0 243.057 230.305 Z" fill="#3A65B0cc" class="inner-slice" stroke="white" stroke-width="1.5"/>
+    <!-- Ícone (SVG scalado) -->
+    <g transform="translate(242.7,163.5) scale(1)" opacity="0.9">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 21 L21 21 M5 21 L5 10 M19 21 L19 10 M12 3 L20 10 L4 10 Z M9 21 L9 15 L15 15 L15 21"/>
+      </svg>
+    </g>
+    <!-- Tooltip invisível -->
+    <title>Instituições · 6 indicadores</title>
+  </g>
+  
+  <text x="376.10" y="79.92" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">ECONOMIA E</text>
+  <text x="376.10" y="90.92" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">MERCADO DE</text>
+  <text x="376.10" y="101.92" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">TRABALHO</text>
+  <text x="350.11" y="162.34" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="IBM Plex Mono,monospace" font-size="12" font-weight="700" fill="white" opacity="0.95"
+    style="pointer-events:none;">13</text>
+  <text x="492.69" y="183.25" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">MEIO AMBIENTE</text>
+  <text x="492.69" y="194.25" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">E SANEAMENTO</text>
+  <text x="426.87" y="226.75" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="IBM Plex Mono,monospace" font-size="12" font-weight="700" fill="white" opacity="0.95"
+    style="pointer-events:none;">6</text>
+  <text x="519.12" y="327.64" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">EDUCAÇÃO,</text>
+  <text x="519.12" y="338.64" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">CULTURA,</text>
+  <text x="519.12" y="349.64" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">ESPORTE E LAZER</text>
+  <text x="444.27" y="325.44" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="IBM Plex Mono,monospace" font-size="12" font-weight="700" fill="white" opacity="0.95"
+    style="pointer-events:none;">6</text>
+  <text x="443.02" y="470.44" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">MOBILIDADE</text>
+  <text x="394.17" y="412.23" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="IBM Plex Mono,monospace" font-size="12" font-weight="700" fill="white" opacity="0.95"
+    style="pointer-events:none;">5</text>
+  <text x="300.00" y="511.50" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">ORDENAMENTO</text>
+  <text x="300.00" y="522.50" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">TERRITORIAL E</text>
+  <text x="300.00" y="533.50" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">HABITAÇÃO</text>
+  <text x="300.00" y="446.50" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="IBM Plex Mono,monospace" font-size="12" font-weight="700" fill="white" opacity="0.95"
+    style="pointer-events:none;">14</text>
+  <text x="156.98" y="470.44" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">SEGURANÇA</text>
+  <text x="205.83" y="412.23" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="IBM Plex Mono,monospace" font-size="12" font-weight="700" fill="white" opacity="0.95"
+    style="pointer-events:none;">17</text>
+  <text x="80.88" y="338.64" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">SAÚDE</text>
+  <text x="155.73" y="325.44" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="IBM Plex Mono,monospace" font-size="12" font-weight="700" fill="white" opacity="0.95"
+    style="pointer-events:none;">18</text>
+  <text x="107.31" y="188.75" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">CONECTIVIDADE</text>
+  <text x="173.13" y="226.75" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="IBM Plex Mono,monospace" font-size="12" font-weight="700" fill="white" opacity="0.95"
+    style="pointer-events:none;">5</text>
+  <text x="223.90" y="85.42" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">INSTITUIÇÕES</text>
+  <text x="223.90" y="96.42" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="Sora,sans-serif" font-size="10" font-weight="700" fill="white"
+    style="pointer-events:none; text-shadow: 0 1px 4px rgba(0,0,0,0.5);">LOCAIS</text>
+  <text x="249.89" y="162.34" 
+    text-anchor="middle" dominant-baseline="middle"
+    font-family="IBM Plex Mono,monospace" font-size="12" font-weight="700" fill="white" opacity="0.95"
+    style="pointer-events:none;">6</text>
+  <!-- Círculo central branco -->
+  <circle cx="300" cy="300" r="86" fill="white" stroke="#e0e8f0" stroke-width="2"/>
+  <!-- Anel cinza escuro -->
+  <circle cx="300" cy="300" r="92" fill="none" stroke="#4a5a6a" stroke-width="10"/>
+  <!-- Logo ODSB centralizado -->
+  <image href="logo.png" x="258" y="262" width="84" height="84" style="filter:saturate(1.1)"/>
+</svg>
+      <div class="mandala-tooltip" id="mandalaTooltip">
+        <div class="tt-name" id="ttName">—</div>
+        <div class="tt-ind" id="ttInd">—</div>
+        <div class="tt-label">indicadores</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Dados de Fontes Secundárias -->
+  <div class="fontes-section">
+    <div class="parallax-bg"></div>
+    <h2>Dados de Fontes Secundárias</h2>
+    <p>A coleta de dados é essencial para realizar análises precisas e qualifica decisões. Ela pode ser feita a partir de fontes primárias ou secundárias. Dados de fonte primária são aqueles coletados diretamente pela pessoa ou organização que realiza a pesquisa, por meio de métodos como entrevistas, questionários, observação direta ou experimentos. Esses dados são originais e específicos ao propósito da pesquisa, oferecendo alta precisão e relevância, mas exigindo mais tempo e recursos para serem obtidos. Por outro lado, os dados de fonte secundária são informações previamente coletadas e organizadas por terceiros, como censos, relatórios governamentais, artigos acadêmicos ou bases de dados públicas. A combinação de ambas as fontes é comum para equilibrar precisão e eficiência em estudos analíticos. A seleção criteriosa de fontes secundárias confiáveis é crucial para garantir a qualidade e a precisão das análises. Dados de organizações consolidadas e de prestígio nacional – como órgãos governamentais, institutos de pesquisa e agências reconhecidas – assegura que as informações utilizadas foram coletadas com rigor metodológico e seguem padrões éticos e científicos. Fontes bem estabelecidas geralmente passam por revisões rigorosas e são submetidas a auditorias regulares, o que aumenta a confiabilidade dos dados. Além disso, essas fontes tendem a oferecer dados atualizados e contextualizados, o que é essencial para evitar distorções ou conclusões equivocadas. Com base em fontes secundárias robustas, a pesquisa ganha legitimidade e maior credibilidade, pois se apoia em informações de alta qualidade. O ODSB utiliza dados de fontes secundárias, no entanto, estudos complementares oriundos de fontes primárias poderão ser disponibilizados na plataforma, considerando a confiabilidade e relevância para a população de Barcarena.</p>
+  </div>
+
+  <!-- 6. Metodologia + Definição da Base -->
+  <div class="metodo-grid">
+    <div class="metodo-card">
+      <h2>Metodologia Para Coleta de Dados</h2>
+      <p>O procedimento de diagnóstico baseado em indicadores é um processo sistemático de coleta, seleção, análise e interpretação de dados para identificar problemas nas dimensões previstas em nosso estudo. O processo envolve as seguintes etapas:</p>
+      <ul>
+        <li>Coleta de dados a partir de uma variedade de fontes disponíveis, na sua maioria, online.</li>
+        <li>Definição dos Objetivos do diagnóstico. O que o estudo deseja identificar?</li>
+        <li>Seleção dos indicadores segundo um critério de seleção ótimo, com o objetivo de garantir que eles sejam relevantes, válidos, confiáveis, sensíveis, específicos, acessíveis, eficientes, comparáveis, interpretáveis e úteis.</li>
+        <li>Análise dos dados para identificação de tendências, padrões e discrepâncias, etapa realizada a partir de uma variedade de técnicas estatísticas ou qualitativas.</li>
+        <li>Interpretação dos resultados à luz dos objetivos do diagnóstico e dos indicadores selecionados previamente para este propósito.</li>
+      </ul>
+    </div>
+    <div class="metodo-card">
+      <h2>Definição da Base de Dados</h2>
+      <p>Para compreender em profundidade cada dimensão do ODSB, um levantamento de dados orientado por especialistas foi conduzido. Desse modo, identificaram-se as informações, variáveis e indicadores essenciais para o estudo. Uma parcela expressiva dos dados foi coletada de forma automatizada diretamente das plataformas originais, o que permitiu um enriquecimento rápido e consistente do banco de dados. Contudo, outras informações precisaram ser coletadas manualmente a partir de diversas fontes secundárias, complementando o repositório.</p>
+      <p>Com essa base de dados, contendo variáveis, indicadores e índices rigorosamente selecionados, tornou-se possível realizar uma análise detalhada das dimensões do ODSB por meio de modelos estatísticos avançados. Esses modelos têm permitido identificar relações de causa e efeito tanto entre indicadores dentro de uma mesma dimensão quanto entre indicadores de diferentes dimensões, aprofundando a compreensão das dinâmicas e interdependências que influenciam o desenvolvimento sustentável de Barcarena.</p>
+    </div>
+  </div>
+
+</div><!-- /about-wrap -->
+
+<!-- ══ BARRA DE PARCEIROS ══ -->
+<div class="partners-bar">
+  <div class="partners-inner">
+    <div class="partner-group">
+      <span class="partner-label">Contato</span>
+      <a href="/cdn-cgi/l/email-protection#8fe9eee3eaece0e1e0fcece0cfe9fae1ebe0e7f6ebfde0a1e0fde8" style="font-size:0.88rem;color:#1B4F9B;text-decoration:none;display:flex;align-items:center;gap:6px;font-weight:600;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B4F9B" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+        faleconosco&#64;fundohydro.org
+      </a>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Realização</span>
+      <div class="partner-logos">
+        <a href="https://fundohydro.org/inicio" target="_blank" rel="noopener">
+          <img src="fundohydro.png" alt="Hydro · ALBRAS · Fundo Hydro" style="height:40px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Apoio</span>
+      <div class="partner-logos">
+        <a href="https://www.barcarenasustentavel.org/" target="_blank" rel="noopener" title="Iniciativa Barcarena Sustentável">
+          <img src="ibs.png" alt="Iniciativa Barcarena Sustentável" style="height:44px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Execução</span>
+      <div class="partner-logos">
+        <a href="https://ufpa.br/" target="_blank" rel="noopener" title="UFPA">
+          <img src="ufpa.png" alt="UFPA" style="height:52px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div style="margin-bottom:0.8rem;">
+          <img src="logo.png" alt="ODSB" style="height:40px;width:auto;object-fit:contain;filter:brightness(0) invert(1);">
+        </div>
+        <p>Produção, análise e difusão de dados sobre os indicadores do município de Barcarena, Pará. Uma iniciativa envolvendo o apoio do Fundo Hydro, UFPA e Transparência Pública para a melhoria da qualidade de vida em Barcarena.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Conteúdo</h4>
+        <ul>
+          <li><a href="#">Relatórios</a></li>
+          <li><a href="#">Indicadores</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="#">Pesquisas</a></li>
+          <li><a href="#">Legislação</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Observatório</h4>
+        <ul>
+          <li><a href="sobre.html" style="font-weight:700;color:#fff;">Sobre</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="#">Missão</a></li>
+          <li><a href="#">Parceiros</a></li>
+          <li><a href="#">Metodologia</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contato</h4>
+        <ul>
+          <li><a href="/cdn-cgi/l/email-protection#5335323f36303c3d3c20303c1335263d373c3b2a37213c7d3c2134">Email</a></li>
+          <li><a href="#">Redes Sociais</a></li>
+          <li><a href="#">Denúncias</a></li>
+          <li><a href="#">Privacidade</a></li>
+          <li><a href="#">Acessibilidade</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Observatório do Desenvolvimento Sustentável de Barcarena. Todos os direitos reservados.</span>
+      <a href="#">Política de Privacidade</a>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* Me
