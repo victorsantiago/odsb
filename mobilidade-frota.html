@@ -122,6 +122,9 @@
     /* Fonte e Metodologia e Navegação sempre ocupam linha inteira */
     .ind-content.two-col .card-meta,
     .ind-content.two-col .ind-nav { grid-column: 1 / -1; }
+    /* Garantir que cards não ultrapassem a coluna */
+    .ind-content.two-col .card { min-width:0; overflow:hidden; }
+    .ind-content.two-col .chart-wrap { overflow:hidden; }
 
     /* ══ BOTÃO DE ALTERNÂNCIA ══ */
     .layout-toggle {
