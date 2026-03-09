@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Observatório de Barcarena</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #1B4F9B;
+      --primary-light: #2A6CC4;
+      --primary-dark: #0E3270;
+      --accent: #E05A2B;
+      --dark: #091C3A;
+      --light: #EEF2F8;
+      --text: #1a2a3a;
+      --text-light: #5a7090;
+      --border: #C8D8EE;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Sora', sans-serif;
+      color: var(--text);
+      background: var(--light);
+      overflow-x: hidden;
+    }
+    header {
+      position: fixed;
+      top: 0; width: 100%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      border-bottom: 1px solid var(--border);
+      animation: slideDown 0.6s ease-out;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity:0; }
+      to   { transform: translateY(0);    opacity:1; }
+    }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 3rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.9rem;
+      position: relative;
+      transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 0.65rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: all 0.3s;
+      box-shadow: 0 4px 14px rgba(27,79,155,0.22);
+    }
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(27,79,155,0.3);
+    }
+
+    .hero {
+      margin-top: 64px;
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: linear-gradient(160deg, #060D20 0%, #0D1F40 55%, #0A1635 100%);
+    }
+
+    /* Canvas de partículas / linhas */
+    #heroCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      opacity: 0.85;
+    }
+
+    /* Gradiente suave sobre o canvas */
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 60%, rgba(27,79,155,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 780px;
+      padding: 2rem;
+      animation: fadeUp 0.9s ease-out 0.2s both;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(28px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    .hero-tag {
+      display: inline-block;
+      border: 1px solid rgba(42,108,196,0.4);
+      color: #8DC63F;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 1.6rem;
+      background: rgba(42,108,196,0.08);
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, #8DC63F, #2A6CC4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      color: rgba(255,255,255,0.62);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      max-width: 560px;
+      margin: 0 auto 2.4rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .btn-prim {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #fff;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      border: none; cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 18px rgba(27,79,155,0.35);
+    }
+    .btn-prim:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(27,79,155,0.45); }
+    .btn-out {
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      border: 1.5px solid rgba(255,255,255,0.28);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-out:hover { border-color: #8DC63F; color: #8DC63F; }
+
+    .hero-stats {
+      display: inline-grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+    }
+    .hstat {
+      padding: 1.2rem 2rem;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+    }
+    .hstat:last-child { border-right: none; }
+    .hstat-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #1B4F9B, #E05A2B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .hstat-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+      gap: 6px;
+      opacity: 0.45;
+      animation: bounceY 2s ease-in-out infinite;
+      z-index: 10;
+    }
+    .scroll-hint span { font-size: 0.7rem; color: #fff; letter-spacing: 0.1em; text-transform: uppercase; }
+    .scroll-hint svg { width: 20px; fill: #fff; }
+    @keyframes bounceY {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(8px); }
+    }
+
+    .dimensions {
+      padding: 5rem 3rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .sec-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .sec-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #8DC63F;
+      margin-bottom: 0.6rem;
+    }
+    .sec-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      color: var(--dark);
+    }
+    .sec-sub {
+      font-size: 0.95rem;
+      color: var(--text-light);
+      margin-top: 0.6rem;
+    }
+
+    .dim-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+    .dim-card {
+      background: #fff;
+      border-radius: 12px;
+      border-left: 4px solid;
+      padding: 1.6rem 1.4rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dim-card:hover {
+      background: currentColor;
+      transform: translateY(-6px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+    }
+    .dim-card:hover .dim-icon,
+    .dim-card:hover .dim-name,
+    .dim-card:hover .dim-arrow {
+      color: #fff;
+      stroke: #fff;
+    }
+    .dim-card:hover .dim-icon svg {
+      stroke: #fff;
+      color: #fff;
+    }
+    .dim-card:hover .dim-icon svg * {
+      stroke: #fff;
+      fill: none;
+    }
+    .dim-icon { width: 36px; height: 36px; margin-bottom: 0.9rem; opacity: 0.85; transition: color 0.3s; }
+    .dim-icon svg { width: 36px; height: 36px; display: block; transition: stroke 0.3s; }
+    .dim-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      transition: color 0.3s;
+    }
+    .dim-arrow {
+      position: absolute;
+      right: 1.2rem; bottom: 1.2rem;
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s, color 0.3s;
+      color: inherit;
+    }
+    .dim-card:hover .dim-arrow { opacity: 0.8; transform: translate(3px,-3px); color: #fff; }
+
+    .car-section {
+      padding: 5rem 3rem;
+      position: relative;
+    }
+    .car-section .sec-header,
+    .car-section .car-wrap { position: relative; z-index: 10; }
+    .car-section .sec-eyebrow { color: #8DC63F; }
+    .car-section .sec-title   { color: #fff; }
+    .car-section .sec-sub     { color: rgba(255,255,255,0.5); }
+
+    /* fundo parallax */
+    .car-parallax-clip {
+      position: absolute; inset: 0;
+      overflow: hidden; pointer-events: none;
+    }
+    .car-parallax-bg {
+      position: absolute;
+      top: -40%; left: 0; right: 0; bottom: -40%;
+      will-change: transform;
+      background: url("banner.jpg") center center / cover no-repeat;
+    }
+
+    /* viewport do carrossel */
+    .car-wrap  { max-width: 1200px; margin: 0 auto; }
+    .car-outer { overflow: hidden; width: 100%; padding: 12px 8px; }
+
+    /* faixa de cards — sem gap, espaço feito por padding nos cards */
+    .car-track {
+      display: flex;
+      width: 100%;
+      transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+    }
+
+    .car-card {
+      flex: 0 0 calc(33.3333% - 16px);
+      box-sizing: border-box;
+      padding: 0 10px;
+      border-radius: 18px;
+      overflow: visible;
+      background: rgba(8, 16, 32, 0.55);
+      border: 1px solid rgba(255,255,255,0.13);
+      display: flex; flex-direction: column;
+      backdrop-filter: blur(10px);
+      transition: background 0.35s, transform 0.35s cubic-bezier(.2,0,.2,1), box-shadow 0.35s, border-color 0.35s;
+      margin: 0 8px;
+    }
+    .car-card:hover {
+      background: rgba(20, 36, 64, 0.75);
+      transform: scale(1.03);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.40), 0 0 0 1px rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    .car-img {
+      width: 100%; aspect-ratio: 16/7;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      border-radius: 10px 10px 0 0;
+    }
+
+
+
+    /* Icon wrapper: glowing circle */
+    .car-icon-wrap {
+      position: relative; z-index: 3;
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.28);
+      border: 1.5px solid rgba(255,255,255,0.18);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 22px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.12);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .car-card:hover .car-icon-wrap {
+      transform: scale(1.1);
+      box-shadow: 0 0 32px rgba(255,255,255,0.14), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+
+    .car-img svg.car-dim-icon {
+      width: 34px; height: 34px; position: relative; z-index: 1; opacity: .95;
+    }
+
+    .car-dim-economia  { background: transparent; }
+    .car-dim-ambiente  { background: transparent; }
+    .car-dim-educacao  { background: transparent; }
+    .car-dim-mobilidade{ background: transparent; }
+    .car-dim-territorio{ background: transparent; }
+    .car-dim-seguranca { background: transparent; }
+    .car-dim-saude     { background: transparent; }
+    .car-dim-conectiv  { background: transparent; }
+    .car-dim-instituic { background: transparent; }
+
+    /* Card body */
+    .car-body {
+      padding: 1.1rem 1.2rem 1rem;
+      flex: 1; display: flex; flex-direction: column;
+      gap: 0;
+    }
+
+    .car-cat {
+      font-size: .63rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .16em;
+      margin-bottom: 7px;
+      opacity: 0.9;
+    }
+
+    .car-title {
+      font-size: .9rem; font-weight: 700;
+      color: #fff; line-height: 1.5; flex: 1;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+
+    .car-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: .85rem; padding-top: .75rem;
+      border-top: 1px solid rgba(255,255,255,0.10);
+      gap: 8px;
+    }
+
+    .car-date {
+      font-size: .68rem; color: rgba(255,255,255,.4);
+      font-family: 'IBM Plex Mono', monospace;
+      letter-spacing: .06em;
+    }
+
+    .car-download {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .75rem; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(135deg, #1B4F9B 0%, #2A6CC4 100%);
+      border: none; border-radius: 50px;
+      padding: 7px 15px; text-decoration: none;
+      transition: transform .2s, box-shadow .2s, filter .2s;
+      box-shadow: 0 4px 14px rgba(27,79,155,0.45);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .car-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(27,79,155,0.65);
+      filter: brightness(1.14);
+    }
+    .car-download:active { transform: translateY(0); }
+    .car-download svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .car-card { cursor: pointer; }
+
+    /* controles */
+    .car-controls {
+      display:flex; align-items:center; justify-content:center;
+      gap:1rem; margin-top:1.8rem; position:relative; z-index:10;
+    }
+    .car-btn {
+      width:48px; height:48px; border-radius:50%;
+      border:1.5px solid rgba(255,255,255,.3);
+      background:rgba(255,255,255,.08);
+      color:#fff; cursor:pointer; font-size:1.2rem;
+      display:flex; align-items:center; justify-content:center;
+      transition: all .3s;
+    }
+    .car-btn:hover { background:var(--primary); border-color:var(--primary); }
+    .car-dots-wrap { display:flex; gap:6px; }
+    .car-dot {
+      width:7px; height:7px; border-radius:50%;
+      background:rgba(255,255,255,.25); cursor:pointer; transition:all .3s;
+    }
+    .car-dot.active { background:#8DC63F; width:20px; border-radius:4px; }
+
+    footer {
+      background: #E05A2B;
+      color: rgba(255,255,255,0.9);
+      padding: 4rem 3rem 2rem;
+    }
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+    }
+    .footer-brand {}
+    .footer-logo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, rgba(255,255,255,0.75));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.8rem;
+    }
+    .footer-brand p {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.55);
+      max-width: 280px;
+    }
+    .footer-col h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.6rem; }
+    .footer-col ul li a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      font-size: 0.87rem;
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: #fff; }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.8rem;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.5);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .footer-bottom a { color: rgba(255,255,255,0.5); text-decoration: none; }
+    .footer-bottom a:hover { color: #fff; }
+
+    .partners-bar {
+      background: #f0f2f5;
+      border-top: 1px solid #dde3ea;
+      padding: 1.8rem 3rem;
+    }
+    .partners-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      align-items: center;
+    }
+    .partner-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 0 2rem;
+      border-right: 1px solid #ccd4de;
+    }
+    .partner-group:first-child { padding-left: 0; }
+    .partner-group:last-child  { border-right: none; }
+    .partner-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #8a9aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .partner-logos {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .partner-logos a { display: flex; align-items: center; text-decoration: none; }
+    .partner-logos svg { display: block; }
+
+    @media(max-width:900px) {
+      /* Nav */
+      nav { padding: 0.8rem 1.2rem; }
+      .nav-links { display: none; }
+      .nav-cta { padding: 0.55rem 1.1rem; font-size: 0.82rem; }
+
+      /* Hero */
+      .hero { padding: 2rem 1.2rem; }
+      .hero h1 { font-size: 2rem; }
+      .hero-sub { font-size: 0.95rem; }
+      .hero-stats { grid-template-columns: repeat(3,1fr); }
+
+      /* Dimensões */
+      .dimensions { padding: 3.5rem 1.2rem; }
+      .dim-grid { grid-template-columns: repeat(2, 1fr); gap: 0.9rem; }
+
+      /* Carrossel */
+      .carousel-section { padding: 3.5rem 1.2rem; }
+      .carousel-track-outer { --car-visible: 2; }
+
+
+      /* Parceiros */
+      .partners-bar { padding: 1.5rem 1.2rem; }
+      .partners-inner { grid-template-columns: 1fr 1fr; gap: 1.5rem 0; }
+      .partner-group { padding: 0 1.2rem; border-right: none; border-bottom: 1px solid #ccd4de; padding-bottom: 1.2rem; }
+      .partner-group:nth-child(odd)  { padding-left: 0; }
+      .partner-group:nth-child(even) { padding-right: 0; }
+      .partner-group:nth-last-child(-n+2) { border-bottom: none; padding-bottom: 0; }
+
+      /* Footer */
+      footer { padding: 3rem 1.2rem 1.5rem; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    }
+
+    /* ── Mobile (≤ 600px) ── */
+    @media(max-width:600px) {
+      /* Nav */
+      nav { padding: 0.75rem 1rem; gap: 0.5rem; }
+      .nav-cta { display: none; }
+      #navBurger { display: flex !important; }
+
+      /* Hero */
+      .hero { padding: 3rem 1rem 2.5rem; min-height: auto; padding-top: 5rem; }
+      .hero-content { padding: 1rem; }
+      .hero h1 { font-size: 1.65rem; line-height: 1.2; }
+      .hero-sub { font-size: 0.88rem; }
+      .hero-btns { flex-direction: column; gap: 0.7rem; }
+      .btn-prim, .btn-out { width: 100%; text-align: center; padding: 0.85rem 1rem; }
+      .hero-stats {
+        grid-template-columns: repeat(3, 1fr);
+        width: 100%;
+      }
+      .hstat { padding: 0.9rem 0.5rem; }
+      .hstat-num { font-size: 1.3rem; }
+      .hstat-label { font-size: 0.65rem; }
+
+      /* Dimensões */
+      .dimensions { padding: 2.5rem 1rem; }
+      .sec-title { font-size: 1.5rem; }
+      .dim-grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+      .dim-card { padding: 1.1rem 1rem; }
+      .dim-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+      .dim-name { font-size: 0.82rem; }
+
+      /* Carrossel */
+      .carousel-section { padding: 2.5rem 1rem; }
+      .carousel-track-outer { --car-visible: 1; }
+
+      .car-img { aspect-ratio: 16/7; }
+
+      /* Parceiros */
+      .partners-bar { padding: 1.2rem 1rem; }
+      .partners-inner { grid-template-columns: 1fr; gap: 0; }
+      .partner-group {
+        padding: 1rem 0 !important;
+        border-right: none !important;
+        border-bottom: 1px solid #ccd4de;
+      }
+      .partner-group:last-child { border-bottom: none; }
+      .partner-logos { flex-wrap: wrap; gap: 10px; }
+
+      /* Footer */
+      footer { padding: 2.5rem 1rem 1.5rem; }
+      .footer-top { grid-template-columns: 1fr; gap: 1.8rem; }
+      .footer-brand p { max-width: 100%; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    }
+
+    /* ── Mobile pequeno (≤ 380px) ── */
+    @media(max-width:380px) {
+      .hero h1 { font-size: 1.4rem; }
+      .dim-grid { grid-template-columns: 1fr; }
+      .hero-stats { grid-template-columns: 1fr; }
+      .hstat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+      .hstat:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <nav>
+    <a class="logo" href="#" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <img src="logo.png" alt="ODSB" style="height:38px;width:auto;object-fit:contain;">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#dimensoes">Dimensões</a></li>
+      <li><a href="#galeria">Publicações</a></li>
+      <li><a href="colaboradores.html">Colaboradores</a></li>
+      <li><a href="sobre.html">Sobre</a></li>
+    </ul>
+    <a href="#" class="nav-cta">Acessar Dashboard</a>
+    <!-- Hamburguer mobile -->
+    <button class="nav-burger" id="navBurger" aria-label="Menu" style="display:none;background:none;border:none;cursor:pointer;padding:4px;flex-direction:column;gap:5px;">
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;"></span>
+    </button>
+  </nav>
+  <!-- Menu mobile drawer -->
+  <div id="mobileMenu" style="display:none;position:fixed;top:60px;left:0;right:0;background:rgba(255,255,255,0.98);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:999;padding:1rem 1.5rem 1.5rem;flex-direction:column;gap:0;">
+    <a href="#inicio"     onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Início</a>
+    <a href="#dimensoes"  onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Dimensões</a>
+    <a href="#galeria"    onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Publicações</a>
+    <a href="colaboradores.html" onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Colaboradores</a>
+    <a href="sobre.html" onclick="closeMobileMenu()" style="display:block;padding:0.75rem 0;color:var(--text);text-decoration:none;font-weight:600;font-size:0.95rem;border-bottom:1px solid #eee;">Sobre</a>
+    <a href="#" style="display:block;margin-top:1rem;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:0.8rem 1.5rem;border-radius:50px;font-weight:700;font-size:0.9rem;text-align:center;text-decoration:none;">Acessar Dashboard</a>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="inicio">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-tag">📍 Barcarena, Pará — Amazônia</div>
+    <h1>Observatório do<br><em>Desenvolvimento Sustentável</em><br>de Barcarena</h1>
+    <p class="hero-sub">
+      Análises estatísticas dos principais indicadores do desenvolvimento sustentável para uma tomada de decisão mais qualificada.
+    </p>
+    <div class="hero-btns">
+      <a href="#dimensoes" class="btn-prim">Explorar Indicadores</a>
+      <a href="#" class="btn-out">Saiba Mais →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat">
+        <div class="hstat-num">50+</div>
+        <div class="hstat-label">Indicadores</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num">9</div>
+        <div class="hstat-label">Dimensões</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num">2025</div>
+        <div class="hstat-label">Atualizado</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Rolar</span>
+    <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
+  </div>
+</section>
+
+<!-- ══ DIMENSÕES ══ -->
+<section class="dimensions" id="dimensoes">
+  <div class="sec-header">
+    <div class="sec-eyebrow">Áreas de Monitoramento</div>
+    <h2 class="sec-title">Escolha uma Dimensão</h2>
+    <p class="sec-sub">Acesse indicadores detalhados por área temática</p>
+  </div>
+
+  <div class="dim-grid">
+
+    <!-- Economia e Mercado de Trabalho -->
+    <div class="dim-card" style="border-left-color:#d4594c; color:#d4594c">
+      <div class="dim-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4,26 12,16 18,20 28,8"/>
+          <polyline points="24,8 28,8 28,12"/>
+          <line x1="4" y1="30" x2="32" y2="30"/>
+        </svg>
+      </div>
+      <div class="dim-name">Economia e Mercado de Trabalho</div>
+      <div class="dim-arrow">↗</div>
+    </div>
+
+    <!-- Meio Ambiente e Saneamento -->
+    <div class="dim-card" style="border-left-color:#c4b840; color:#c4b840">
+      <div class="dim-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="18,3 24,13 12,13"/>
+          <polygon points="18,9 25,21 11,21"/>
+          <line x1="18" y1="21" x2="18" y2="27"/>
+          <polygon points="8,8 13,17 3,17"/>
+          <line x1="8" y1="17" x2="8" y2="22"/>
+          <polygon points="28,8 33,17 23,17"/>
+          <line x1="28" y1="17" x2="28" y2="22"/>
+          <line x1="2" y1="27" x2="34" y2="27"/>
+        </svg>
+      </div>
+      <div class="dim-name">Meio Ambiente e Saneamento</div>
+      <div class="dim-arrow">↗</div>
+    </div>
+
+    <!-- Educação, Cultura, Esporte e Lazer -->
+    <div class="dim-card" style="border-left-color:#1B4F9B; color:#1B4F9B">
+      <div class="dim-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 14 L18 7 L32 14 L18 21 Z"/>
+          <path d="M26 17.5 L26 25 C26 25 22 28 18 28 C14 28 10 25 10 25 L10 17.5"/>
+          <line x1="32" y1="14" x2="32" y2="22"/>
+        </svg>
+      </div>
+      <div class="dim-name">Educação, Cultura, Esporte e Lazer</div>
+      <div class="dim-arrow">↗</div>
+    </div>
+
+    <!-- Mobilidade -->
+    <div class="dim-card" style="border-left-color:#d4b840; color:#d4b840">
+      <div class="dim-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="12" width="26" height="14" rx="3"/>
+          <line x1="5" y1="18" x2="31" y2="18"/>
+          <line x1="14" y1="12" x2="14" y2="26"/>
+          <circle cx="11" cy="28" r="2"/>
+          <circle cx="25" cy="28" r="2"/>
+        </svg>
+      </div>
+      <div class="dim-name">Mobilidade</div>
+      <div class="dim-arrow">↗</div>
+    </div>
+
+    <!-- Ordenamento Territorial e Habitação -->
+    <div class="dim-card" style="border-left-color:#4ecdc4; color:#4ecdc4">
+      <div class="dim-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 5 L32 15 L32 31 L4 31 L4 15 Z"/>
+          <rect x="13" y="21" width="10" height="10"/>
+          <polyline points="4,15 18,5 32,15"/>
+        </svg>
+      </div>
+      <div class="dim-name">Ordenamento Territorial e Habitação</div>
+      <div class="dim-arrow">↗</div>
+    </div>
+
+    <!-- Segurança -->
+    <div class="dim-card" style="border-left-color:#5abf80; color:#5abf80">
+      <div class="dim-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 4 L30 9 L30 19 C30 25 24 30 18 32 C12 30 6 25 6 19 L6 9 Z"/>
+          <circle cx="18" cy="18" r="5"/>
+          <line x1="18" y1="13" x2="18" y2="11"/>
+          <line x1="18" y1="23" x2="18" y2="25"/>
+          <line x1="13" y1="18" x2="11" y2="18"/>
+          <line x1="23" y1="18" x2="25" y2="18"/>
+        </svg>
+      </div>
+      <div class="dim-name">Segurança</div>
+      <div class="dim-arrow">↗</div>
+    </div>
+
+    <!-- Saúde -->
+    <div class="dim-card" style="border-left-color:#8b3a3a; color:#8b3a3a">
+      <div class="dim-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 30 C18 30 6 22 6 14 C6 9 10 6 14 6 C16 6 18 8 18 8 C18 8 20 6 22 6 C26 6 30 9 30 14 C30 22 18 30 18 30Z"/>
+          <line x1="18" y1="14" x2="18" y2="22"/>
+          <line x1="14" y1="18" x2="22" y2="18"/>
+        </svg>
+      </div>
+      <div class="dim-name">Saúde</div>
+      <div class="dim-arrow">↗</div>
+    </div>
+
+    <!-- Conectividade -->
+    <div class="dim-card" style="border-left-color:#2c3e7d; color:#2c3e7d">
+      <div class="dim-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 13 C10 7 26 7 32 13"/>
+          <path d="M8 18 C12 13 24 13 28 18"/>
+          <path d="M12 23 C14 20 22 20 24 23"/>
+          <circle cx="18" cy="29" r="2" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="dim-name">Conectividade</div>
+      <div class="dim-arrow">↗</div>
+    </div>
+
+    <!-- Instituições Locais -->
+    <div class="dim-card" style="border-left-color:#E05A2B; color:#E05A2B">
+      <div class="dim-icon">
+        <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="31" x2="32" y2="31"/>
+          <rect x="10" y="18" width="5" height="13"/>
+          <rect x="21" y="18" width="5" height="13"/>
+          <rect x="13" y="9" width="10" height="9"/>
+          <polyline points="4,18 18,6 32,18"/>
+        </svg>
+      </div>
+      <div class="dim-name">Instituições Locais</div>
+      <div class="dim-arrow">↗</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ CARROSSEL ══ -->
+<section class="car-section" id="galeria">
+
+  <div class="car-parallax-clip">
+    <div class="car-parallax-bg" id="parallaxBg"></div>
+  </div>
+
+  <div class="sec-header" style="margin-bottom:2.5rem">
+    <div class="sec-eyebrow">Publicações Recentes</div>
+    <h2 class="sec-title">Relatórios & Pesquisas</h2>
+    <p class="sec-sub" style="color:rgba(255,255,255,0.45)">Baixe um artigo curto sobre uma das dimensões</p>
+  </div>
+
+  <div class="car-wrap">
+    <div class="car-outer" id="carOuter">
+      <div class="car-track" id="carTrack">
+
+        <div class="car-card">
+          <div class="car-img car-dim-economia">
+            <div class="car-icon-wrap">
+              <svg class="car-dim-icon" viewBox="0 0 36 36" fill="none" stroke="#d4594c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,26 12,16 18,20 28,8"/><polyline points="24,8 28,8 28,12"/><line x1="4" y1="30" x2="32" y2="30"/></svg>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-cat" style="color:#d4594c">Economia e Mercado de Trabalho</div>
+            <div class="car-title">Relatório de Economia e Mercado de Trabalho — Barcarena 2024</div>
+            <div class="car-meta">
+              <span class="car-date">2025</span>
+              <a class="car-download" href="/pdfs/economia-mercado-trabalho.pdf" download><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg> Baixar PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="car-card">
+          <div class="car-img car-dim-ambiente">
+            <div class="car-icon-wrap">
+              <svg class="car-dim-icon" viewBox="0 0 36 36" fill="none" stroke="#c4b840" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="18,3 24,13 12,13"/><polygon points="18,9 25,21 11,21"/><line x1="18" y1="21" x2="18" y2="27"/><polygon points="8,8 13,17 3,17"/><line x1="8" y1="17" x2="8" y2="22"/><polygon points="28,8 33,17 23,17"/><line x1="28" y1="17" x2="28" y2="22"/><line x1="2" y1="27" x2="34" y2="27"/></svg>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-cat" style="color:#c4b840">Meio Ambiente e Saneamento</div>
+            <div class="car-title">Relatório de Meio Ambiente e Saneamento — Barcarena 2024</div>
+            <div class="car-meta">
+              <span class="car-date">2025</span>
+              <a class="car-download" href="/pdfs/meio-ambiente-saneamento.pdf" download><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg> Baixar PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="car-card">
+          <div class="car-img car-dim-educacao">
+            <div class="car-icon-wrap">
+              <svg class="car-dim-icon" viewBox="0 0 36 36" fill="none" stroke="#4a7fd4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14 L18 7 L32 14 L18 21 Z"/><path d="M26 17.5 L26 25 C26 25 22 28 18 28 C14 28 10 25 10 25 L10 17.5"/><line x1="32" y1="14" x2="32" y2="22"/></svg>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-cat" style="color:#4a7fd4">Educação, Cultura, Esporte e Lazer</div>
+            <div class="car-title">Relatório de Educação, Cultura, Esporte e Lazer — Barcarena 2024</div>
+            <div class="car-meta">
+              <span class="car-date">2025</span>
+              <a class="car-download" href="/pdfs/educacao.pdf" download><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg> Baixar PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="car-card">
+          <div class="car-img car-dim-mobilidade">
+            <div class="car-icon-wrap">
+              <svg class="car-dim-icon" viewBox="0 0 36 36" fill="none" stroke="#d4b840" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="12" width="26" height="14" rx="3"/><line x1="5" y1="18" x2="31" y2="18"/><line x1="14" y1="12" x2="14" y2="26"/><circle cx="11" cy="28" r="2"/><circle cx="25" cy="28" r="2"/></svg>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-cat" style="color:#d4b840">Mobilidade</div>
+            <div class="car-title">Relatório de Mobilidade Urbana e Rural — Barcarena 2024</div>
+            <div class="car-meta">
+              <span class="car-date">2025</span>
+              <a class="car-download" href="/pdfs/mobilidade.pdf" download><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg> Baixar PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="car-card">
+          <div class="car-img car-dim-territorio">
+            <div class="car-icon-wrap">
+              <svg class="car-dim-icon" viewBox="0 0 36 36" fill="none" stroke="#4ecdc4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 5 L32 15 L32 31 L4 31 L4 15 Z"/><rect x="13" y="21" width="10" height="10"/><polyline points="4,15 18,5 32,15"/></svg>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-cat" style="color:#4ecdc4">Ordenamento Territorial e Habitação</div>
+            <div class="car-title">Relatório de Ordenamento Territorial e Habitação — Barcarena 2024</div>
+            <div class="car-meta">
+              <span class="car-date">2025</span>
+              <a class="car-download" href="/pdfs/ordenamento.pdf" download><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg> Baixar PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="car-card">
+          <div class="car-img car-dim-seguranca">
+            <div class="car-icon-wrap">
+              <svg class="car-dim-icon" viewBox="0 0 36 36" fill="none" stroke="#5abf80" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4 L30 9 L30 19 C30 25 24 30 18 32 C12 30 6 25 6 19 L6 9 Z"/><circle cx="18" cy="18" r="5"/><line x1="18" y1="13" x2="18" y2="11"/><line x1="18" y1="23" x2="18" y2="25"/><line x1="13" y1="18" x2="11" y2="18"/><line x1="23" y1="18" x2="25" y2="18"/></svg>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-cat" style="color:#5abf80">Segurança</div>
+            <div class="car-title">Relatório de Segurança Pública — Barcarena 2024</div>
+            <div class="car-meta">
+              <span class="car-date">2025</span>
+              <a class="car-download" href="/pdfs/seguranca.pdf" download><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg> Baixar PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="car-card">
+          <div class="car-img car-dim-saude">
+            <div class="car-icon-wrap">
+              <svg class="car-dim-icon" viewBox="0 0 36 36" fill="none" stroke="#c46060" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 30 C18 30 6 22 6 14 C6 9 10 6 14 6 C16 6 18 8 18 8 C18 8 20 6 22 6 C26 6 30 9 30 14 C30 22 18 30 18 30Z"/><line x1="18" y1="14" x2="18" y2="22"/><line x1="14" y1="18" x2="22" y2="18"/></svg>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-cat" style="color:#c46060">Saúde</div>
+            <div class="car-title">Relatório de Saúde e Indicadores Sanitários — Barcarena 2024</div>
+            <div class="car-meta">
+              <span class="car-date">2025</span>
+              <a class="car-download" href="/pdfs/saude.pdf" download><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg> Baixar PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="car-card">
+          <div class="car-img car-dim-conectiv">
+            <div class="car-icon-wrap">
+              <svg class="car-dim-icon" viewBox="0 0 36 36" fill="none" stroke="#6080c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13 C10 7 26 7 32 13"/><path d="M8 18 C12 13 24 13 28 18"/><path d="M12 23 C14 20 22 20 24 23"/><circle cx="18" cy="29" r="2" fill="#6080c4" stroke="none"/></svg>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-cat" style="color:#6080c4">Conectividade</div>
+            <div class="car-title">Relatório de Conectividade Digital — Barcarena 2024</div>
+            <div class="car-meta">
+              <span class="car-date">2025</span>
+              <a class="car-download" href="/pdfs/conectividade.pdf" download><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg> Baixar PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="car-card">
+          <div class="car-img car-dim-instituic">
+            <div class="car-icon-wrap">
+              <svg class="car-dim-icon" viewBox="0 0 36 36" fill="none" stroke="#E05A2B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="31" x2="32" y2="31"/><rect x="10" y="18" width="5" height="13"/><rect x="21" y="18" width="5" height="13"/><rect x="13" y="9" width="10" height="9"/><polyline points="4,18 18,6 32,18"/></svg>
+            </div>
+          </div>
+          <div class="car-body">
+            <div class="car-cat" style="color:#E05A2B">Instituições Locais</div>
+            <div class="car-title">Relatório de Instituições e Governança Local — Barcarena 2024</div>
+            <div class="car-meta">
+              <span class="car-date">2025</span>
+              <a class="car-download" href="/pdfs/instituicoes.pdf" download><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="1" x2="6" y2="8"/><polyline points="3,5 6,8 9,5"/><line x1="1" y1="11" x2="11" y2="11"/></svg> Baixar PDF</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="car-controls">
+      <button class="car-btn" id="carPrev" type="button">&#8249;</button>
+      <div class="car-dots-wrap" id="carDots"></div>
+      <button class="car-btn" id="carNext" type="button">&#8250;</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══ BARRA DE PARCEIROS ══ -->
+<div class="partners-bar">
+  <div class="partners-inner">
+    <div class="partner-group">
+      <span class="partner-label">Contato</span>
+      <a href="/cdn-cgi/l/email-protection#b8ded9d4dddbd7d6d7cbdbd7f8decdd6dcd7d0c1dccad796d7cadf" style="font-size:0.88rem;color:#1B4F9B;text-decoration:none;display:flex;align-items:center;gap:6px;font-weight:600;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B4F9B" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+        faleconosco&#64;fundohydro.org
+      </a>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Realização</span>
+      <div class="partner-logos">
+        <a href="https://fundohydro.org/inicio" target="_blank" rel="noopener">
+          <img src="fundohydro.png" alt="Hydro · ALBRAS · Fundo Hydro" style="height:40px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Apoio</span>
+      <div class="partner-logos">
+        <a href="https://www.barcarenasustentavel.org/" target="_blank" rel="noopener" title="Iniciativa Barcarena Sustentável">
+          <img src="ibs.png" alt="Iniciativa Barcarena Sustentável" style="height:44px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+    <div class="partner-group">
+      <span class="partner-label">Execução</span>
+      <div class="partner-logos">
+        <a href="https://ufpa.br/" target="_blank" rel="noopener" title="UFPA">
+          <img src="ufpa.png" alt="UFPA" style="height:52px;width:auto;object-fit:contain;">
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div style="margin-bottom:0.8rem;">
+          <img src="logo.png" alt="ODSB" style="height:40px;width:auto;object-fit:contain;filter:brightness(0) invert(1);">
+        </div>
+        <p>Produção, análise e difusão de dados sobre os indicadores do município de Barcarena, Pará. Uma iniciativa envolvendo o apoio do Fundo Hydro, UFPA e Transparência Pública para a melhoria da qualidade de vida em Barcarena.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Conteúdo</h4>
+        <ul>
+          <li><a href="#">Relatórios</a></li>
+          <li><a href="#">Indicadores</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="#">Pesquisas</a></li>
+          <li><a href="#">Legislação</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Observatório</h4>
+        <ul>
+          <li><a href="sobre.html">Sobre</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="#">Missão</a></li>
+          <li><a href="#">Parceiros</a></li>
+          <li><a href="#">Metodologia</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contato</h4>
+        <ul>
+          <li><a href="/cdn-cgi/l/email-protection#6305020f06000c0d0c10000c2305160d070c0b1a07110c4d0c1104">Email</a></li>
+          <li><a href="#">Redes Sociais</a></li>
+          <li><a href="#">Denúncias</a></li>
+          <li><a href="#">Privacidade</a></li>
+          <li><a href="#">Acessibilidade</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Observatório do Desenvolvimento Sustentável de Barcarena. Todos os direitos reservados.</span>
+      <a href="#">Política de Privacidade</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ SCRIPTS ══ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+(function(){
+  var canvas = document.getElementById('heroCanvas');
+  var ctx    = canvas.getContext('2d');
+  var W, H, t = 0;
+
+  var C = {
+    green:  '#8DC63F',
+    orange: '#E05A2B',
+    gray:   '#C8D8EE',
+    blue:   '#2A6CC4',
+    greenA: function(a){ return 'rgba(141,198,63,'+a+')'; },
+    orangeA:function(a){ return 'rgba(224,90,43,'+a+')'; },
+    grayA:  function(a){ return 'rgba(200,216,238,'+a+')'; },
+    blueA:  function(a){ return 'rgba(42,108,196,'+a+')'; },
+  };
+
+  function resize(){
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    initAll();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function drawGrid(){
+    var step = 60;
+    ctx.lineWidth = 0.5;
+    for(var x = 0; x < W; x += step){
+      var a = (Math.sin(t*0.005 + x*0.015)*0.5+0.5)*0.06 + 0.02;
+      ctx.strokeStyle = C.grayA(a);
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+    }
+    for(var y = 0; y < H; y += step){
+      var a2 = (Math.cos(t*0.004 + y*0.012)*0.5+0.5)*0.06 + 0.02;
+      ctx.strokeStyle = C.grayA(a2);
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    }
+  }
+
+  var tsData = [];
+  function initTS(){
+    tsData = [];
+    var v = 0.5;
+    for(var i=0;i<80;i++){
+      v += (Math.random()-0.48)*0.035;
+      v = Math.max(0.1, Math.min(0.9, v));
+      tsData.push(v);
+    }
+  }
+  function drawTS(){
+    var x0=W*0.03, x1=W*0.44, y0=H*0.08, y1=H*0.42;
+    var n = tsData.length;
+    var drawTo = Math.min(n, Math.floor(t/1.5)+1);
+
+    /* eixos */
+    ctx.strokeStyle = C.grayA(0.20); ctx.lineWidth=0.7;
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x0,y1); ctx.lineTo(x1,y1); ctx.stroke();
+
+    /* ticks eixo Y */
+    ctx.font='8px IBM Plex Mono,monospace'; ctx.fillStyle=C.grayA(0.30); ctx.textAlign='right';
+    [0,25,50,75,100].forEach(function(v,i){
+      var y = y1 - (v/100)*(y1-y0);
+      ctx.fillText(v+'%', x0-4, y+3);
+      ctx.strokeStyle=C.grayA(0.12); ctx.lineWidth=0.5;
+      ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+    });
+    ctx.textAlign='left';
+
+    /* label */
+    ctx.fillStyle=C.grayA(0.28); ctx.font='9px IBM Plex Mono,monospace';
+    ctx.fillText('SÉRIE TEMPORAL — IDH', x0+2, y0-4);
+
+    /* banda CI */
+    ctx.beginPath();
+    for(var i=0;i<drawTo;i++){
+      var px=x0+(i/(n-1))*(x1-x0), ci=0.07;
+      var py=y0+(1-tsData[i])*(y1-y0);
+      i===0?ctx.moveTo(px,py-ci*(y1-y0)):ctx.lineTo(px,py-ci*(y1-y0));
+    }
+    for(var i=drawTo-1;i>=0;i--){
+      var px=x0+(i/(n-1))*(x1-x0), ci=0.07;
+      var py=y0+(1-tsData[i])*(y1-y0);
+      ctx.lineTo(px,py+ci*(y1-y0));
+    }
+    ctx.closePath();
+    ctx.fillStyle=C.greenA(0.07); ctx.fill();
+
+    /* linha principal */
+    ctx.beginPath();
+    for(var i=0;i<drawTo;i++){
+      var px=x0+(i/(n-1))*(x1-x0);
+      var py=y0+(1-tsData[i])*(y1-y0);
+      i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    }
+    var grd=ctx.createLinearGradient(x0,0,x1,0);
+    grd.addColorStop(0,C.greenA(0.15));
+    grd.addColorStop(0.5,C.greenA(0.55));
+    grd.addColorStop(1,C.orangeA(0.55));
+    ctx.strokeStyle=grd; ctx.lineWidth=1.8; ctx.stroke();
+
+    /* ponto atual */
+    if(drawTo>0){
+      var lx=x0+((drawTo-1)/(n-1))*(x1-x0);
+      var ly=y0+(1-tsData[drawTo-1])*(y1-y0);
+      ctx.beginPath(); ctx.arc(lx,ly,3,0,Math.PI*2);
+      ctx.fillStyle=C.orange; ctx.globalAlpha=0.9; ctx.fill();
+      ctx.globalAlpha=1;
+    }
+  }
+
+  var scatterPts=[];
+  function initScatter(){
+    scatterPts=[];
+    var ax=W*0.56, ay=H*0.42, pw=W*0.40, ph=H*0.34;
+    var clusters=[
+      {cx:0.15,cy:0.75,s:0.08,color:C.greenA,n:16},
+      {cx:0.50,cy:0.45,s:0.09,color:C.grayA, n:14},
+      {cx:0.80,cy:0.18,s:0.07,color:C.orangeA,n:12},
+    ];
+    clusters.forEach(function(cl){
+      for(var i=0;i<cl.n;i++){
+        scatterPts.push({
+          x: ax+30+(cl.cx+(Math.random()-.5)*cl.s*2)*pw,
+          y: ay-(cl.cy+(Math.random()-.5)*cl.s*2)*ph,
+          r: Math.random()*2.5+1.2,
+          colorFn: cl.color,
+          alpha: Math.random()*0.4+0.4,
+          phase: Math.random()*Math.PI*2,
+          sp: 0.015+Math.random()*0.01,
+        });
+      }
+    });
+  }
+  function drawScatter(){
+    var ax=W*0.56, ay=H*0.42, pw=W*0.40, ph=H*0.34;
+
+    ctx.strokeStyle=C.grayA(0.20); ctx.lineWidth=0.7;
+    ctx.beginPath(); ctx.moveTo(ax,H*0.08); ctx.lineTo(ax,ay); ctx.lineTo(ax+pw,ay); ctx.stroke();
+    ctx.fillStyle=C.grayA(0.28); ctx.font='9px IBM Plex Mono,monospace'; ctx.textAlign='left';
+    ctx.fillText('SCATTER — PIB vs IDH', ax+2, H*0.06);
+
+    /* eixo X labels */
+    ctx.font='8px IBM Plex Mono,monospace'; ctx.fillStyle=C.grayA(0.25); ctx.textAlign='center';
+    ['2019','2020','2021','2022','2023','2024'].forEach(function(l,i){
+      var x=ax+30+i*((pw-30)/5);
+      ctx.fillText(l, x, ay+12);
+      ctx.strokeStyle=C.grayA(0.12); ctx.lineWidth=0.4;
+      ctx.beginPath(); ctx.moveTo(x,ay); ctx.lineTo(x,ay+4); ctx.stroke();
+    });
+    ctx.textAlign='left';
+
+    scatterPts.forEach(function(p){
+      p.phase+=p.sp;
+      var pulse=1+Math.sin(p.phase)*0.2;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*pulse,0,Math.PI*2);
+      ctx.fillStyle=p.colorFn(p.alpha*(0.7+Math.sin(p.phase)*0.3)); ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*pulse*3,0,Math.PI*2);
+      ctx.fillStyle=p.colorFn(0.05); ctx.fill();
+    });
+
+    var prog=Math.min(1,t/120);
+    var rx1=ax+30, ry1=ay-0.1*ph, rx2=ax+30+prog*(pw-30)*0.92, ry2=ry1-prog*ph*0.72;
+    var rg=ctx.createLinearGradient(rx1,ry1,rx2,ry2);
+    rg.addColorStop(0,C.grayA(0.1)); rg.addColorStop(0.4,C.greenA(0.5)); rg.addColorStop(1,C.orangeA(0.7));
+    ctx.strokeStyle=rg; ctx.lineWidth=1.5; ctx.setLineDash([5,3]);
+    ctx.beginPath(); ctx.moveTo(rx1,ry1); ctx.lineTo(rx2,ry2); ctx.stroke();
+    ctx.setLineDash([]);
+    if(prog>0.75){
+      var fa=(prog-0.75)/0.25;
+      ctx.fillStyle=C.greenA(fa*0.7); ctx.font='bold 10px IBM Plex Mono,monospace';
+      ctx.fillText('R²=0.93', rx2-44, ry2-8);
+    }
+  }
+
+  var donutSlices=[
+    {pct:0.32,color:C.greenA,label:'32%'},
+    {pct:0.24,color:C.orangeA,label:'24%'},
+    {pct:0.20,color:C.grayA,label:'20%'},
+    {pct:0.14,color:C.blueA,label:'14%'},
+    {pct:0.10,color:C.greenA,label:'10%'},
+  ];
+  function drawDonut(){
+    var cx=W*0.88, cy=H*0.78, R=Math.min(W,H)*0.075, r=R*0.55;
+    var rot=t*0.004-Math.PI/2;
+    ctx.fillStyle=C.grayA(0.22); ctx.font='9px IBM Plex Mono,monospace';
+    ctx.textAlign='center'; ctx.fillText('COMPOSIÇÃO', cx, cy-R-10); ctx.textAlign='left';
+
+    var angle=rot;
+    donutSlices.forEach(function(s){
+      var end=angle+s.pct*Math.PI*2;
+      ctx.beginPath(); ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,R,angle,end); ctx.closePath();
+      ctx.fillStyle=s.color(0.35); ctx.fill();
+      ctx.strokeStyle=s.color(0.6); ctx.lineWidth=1; ctx.stroke();
+      /* furo */
+      angle=end;
+    });
+    /* buraco central */
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.fillStyle='rgba(6,13,32,0.9)'; ctx.fill();
+    /* label central */
+    ctx.fillStyle=C.grayA(0.5); ctx.font='bold 10px IBM Plex Mono,monospace';
+    ctx.textAlign='center';
+    ctx.fillText('ODS', cx, cy+4);
+    ctx.textAlign='left';
+  }
+
+  function drawBoxPlot(){
+    var bx=W*0.73, by=H*0.56, bw=18, ph=H*0.20;
+    var groups=[
+      {med:0.62,q1:0.42,q3:0.78,min:0.25,max:0.90,color:C.greenA},
+      {med:0.50,q1:0.35,q3:0.65,min:0.18,max:0.82,color:C.orangeA},
+      {med:0.71,q1:0.55,q3:0.82,min:0.38,max:0.95,color:C.grayA},
+    ];
+    ctx.fillStyle=C.grayA(0.25); ctx.font='9px IBM Plex Mono,monospace'; ctx.textAlign='left';
+    ctx.fillText('BOX PLOT', bx-8, by-ph-10);
+
+    groups.forEach(function(g,i){
+      var x=bx+i*(bw+14);
+      var yMed=by-g.med*ph, yQ1=by-g.q1*ph, yQ3=by-g.q3*ph;
+      var yMin=by-g.min*ph, yMax=by-g.max*ph;
+      /* whiskers */
+      ctx.strokeStyle=g.color(0.35); ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(x+bw/2,yMin); ctx.lineTo(x+bw/2,yMax); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x+bw*0.25,yMin); ctx.lineTo(x+bw*0.75,yMin); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x+bw*0.25,yMax); ctx.lineTo(x+bw*0.75,yMax); ctx.stroke();
+      /* caixa */
+      var grd=ctx.createLinearGradient(0,yQ3,0,yQ1);
+      grd.addColorStop(0,g.color(0.35)); grd.addColorStop(1,g.color(0.12));
+      ctx.fillStyle=grd;
+      if(ctx.roundRect) ctx.roundRect(x,yQ3,bw,yQ1-yQ3,[2]);
+      else ctx.rect(x,yQ3,bw,yQ1-yQ3);
+      ctx.fill();
+      ctx.strokeStyle=g.color(0.5); ctx.lineWidth=1;
+      ctx.strokeRect(x,yQ3,bw,yQ1-yQ3);
+      /* mediana */
+      ctx.strokeStyle=g.color(0.9); ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(x,yMed); ctx.lineTo(x+bw,yMed); ctx.stroke();
+    });
+  }
+
+  var floatLabels=[
+    {text:'σ = 0.082', rx:0.01, ry:0.50, colorFn:C.grayA,   phase:0,   sp:0.006},
+    {text:'μ = 0.634', rx:0.01, ry:0.57, colorFn:C.grayA,   phase:1.1, sp:0.005},
+    {text:'p < 0.001', rx:0.46, ry:0.52, colorFn:C.orangeA, phase:2.3, sp:0.007},
+    {text:'n = 1.247', rx:0.46, ry:0.59, colorFn:C.grayA,   phase:3.7, sp:0.006},
+    {text:'R² = 0.93', rx:0.46, ry:0.66, colorFn:C.greenA,  phase:5.0, sp:0.005},
+    {text:'95% CI',    rx:0.01, ry:0.64, colorFn:C.greenA,  phase:1.8, sp:0.008},
+    {text:'F=12.4',    rx:0.63, ry:0.52, colorFn:C.orangeA, phase:0.7, sp:0.006},
+    {text:'β=0.71',    rx:0.63, ry:0.59, colorFn:C.grayA,   phase:2.1, sp:0.007},
+  ];
+  function drawLabels(){
+    ctx.font='9px IBM Plex Mono,monospace'; ctx.textAlign='left';
+    floatLabels.forEach(function(lb){
+      lb.phase+=lb.sp;
+      var yOff=Math.sin(lb.phase)*5;
+      var a=0.18+Math.sin(lb.phase*0.6)*0.10;
+      ctx.fillStyle=lb.colorFn(a);
+      ctx.fillText(lb.text, lb.rx*W, lb.ry*H+yOff);
+    });
+  }
+
+  var particles=[];
+  function initParticles(){
+    particles=[];
+    for(var i=0;i<35;i++){
+      particles.push({
+        x:Math.random()*W, y:Math.random()*H,
+        vx:(Math.random()-.5)*0.18, vy:(Math.random()-.5)*0.18,
+        r:Math.random()*1.2+0.4,
+        colorFn:[C.greenA,C.orangeA,C.grayA][Math.floor(Math.random()*3)],
+        alpha:Math.random()*0.15+0.05,
+      });
+    }
+  }
+  function drawParticles(){
+    particles.forEach(function(p){
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.colorFn(p.alpha); ctx.fill();
+    });
+  }
+
+  var rFormulas = [
+    { lines: ['lm(IDH ~ PIB + Edu,', '  data = barcarena)'], x:0.01, y:0.72, phase:0,   sp:0.003 },
+    { lines: ['t.test(x, y,', '  conf.level=0.95)'],          x:0.01, y:0.82, phase:2.1, sp:0.004 },
+    { lines: ['aov(PM25 ~ Zona', '  + Error(Ano))'],           x:0.01, y:0.91, phase:4.2, sp:0.003 },
+    { lines: ['cor.test(IDH,PIB,', '  method="pearson")'],     x:0.16, y:0.77, phase:1.1, sp:0.0035},
+    { lines: ['glm(Saude~.,data,', '  family=gaussian)'],      x:0.16, y:0.87, phase:3.5, sp:0.003 },
+  ];
+
+  /* box plots flutuantes — cada um com posição e fase próprias */
+  var floatBoxes = [
+    { x:0.03, y:0.60, w:0.055, h:0.10, phase:0,   sp:0.006, colorFn:C.greenA  },
+    { x:0.10, y:0.58, w:0.045, h:0.09, phase:2.1, sp:0.005, colorFn:C.orangeA },
+    { x:0.17, y:0.61, w:0.050, h:0.08, phase:4.3, sp:0.007, colorFn:C.grayA   },
+  ];
+
+  function drawRCorner(){
+    /* ── fundo translúcido ── */
+    ctx.fillStyle = 'rgba(6,13,32,0.0)';
+
+    /* ── box plots flutuantes ── */
+    floatBoxes.forEach(function(b){
+      b.phase += b.sp;
+      var breathe = Math.sin(b.phase) * 0.008;
+      var bx = (b.x + breathe) * W;
+      var by = b.y * H;
+      var bw = b.w * W;
+      var ph = b.h * H;
+
+      /* valores relativos com leve oscilação */
+      var med = 0.50 + Math.sin(b.phase*0.7)*0.06;
+      var q1  = med  - 0.20 - Math.sin(b.phase*0.5)*0.03;
+      var q3  = med  + 0.20 + Math.cos(b.phase*0.5)*0.03;
+      var mn  = q1   - 0.12;
+      var mx  = q3   + 0.12;
+
+      var yMed = by + (1-med)*ph;
+      var yQ1  = by + (1-q1 )*ph;
+      var yQ3  = by + (1-q3 )*ph;
+      var yMin = by + (1-mn )*ph;
+      var yMax = by + (1-mx )*ph;
+
+      ctx.globalAlpha = 0.55;
+
+      /* whiskers */
+      ctx.strokeStyle = b.colorFn(0.40); ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.moveTo(bx+bw/2, yMin); ctx.lineTo(bx+bw/2, yMax); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx+bw*.2,yMin); ctx.lineTo(bx+bw*.8,yMin); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx+bw*.2,yMax); ctx.lineTo(bx+bw*.8,yMax); ctx.stroke();
+
+      /* caixa */
+      var grd = ctx.createLinearGradient(0,yQ3,0,yQ1);
+      grd.addColorStop(0, b.colorFn(0.22));
+      grd.addColorStop(1, b.colorFn(0.06));
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      if(ctx.roundRect) ctx.roundRect(bx,yQ3,bw,yQ1-yQ3,[2]);
+      else ctx.rect(bx,yQ3,bw,yQ1-yQ3);
+      ctx.fill();
+      ctx.strokeStyle = b.colorFn(0.40); ctx.lineWidth = 0.8;
+      ctx.strokeRect(bx,yQ3,bw,yQ1-yQ3);
+
+      /* mediana */
+      ctx.strokeStyle = b.colorFn(0.80); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(bx,yMed); ctx.lineTo(bx+bw,yMed); ctx.stroke();
+
+      ctx.globalAlpha = 1;
+    });
+
+    /* ── fórmulas R ── */
+    ctx.font = '8.5px IBM Plex Mono,monospace';
+    rFormulas.forEach(function(f){
+      f.phase += f.sp;
+      var yOff = Math.sin(f.phase) * 3;
+      var a    = 0.18 + Math.sin(f.phase*0.5)*0.06;
+      ctx.fillStyle = C.greenA(a);
+      f.lines.forEach(function(line, li){
+        ctx.fillText(line, f.x*W, f.y*H + li*12 + yOff);
+      });
+      /* cursor piscante na última linha */
+      if(Math.floor(t/30)%2===0){
+        var lastLine = f.lines[f.lines.length-1];
+        var tw = ctx.measureText(lastLine).width;
+        ctx.fillStyle = C.greenA(a*1.5);
+        ctx.fillRect(f.x*W + tw + 2, f.y*H + (f.lines.length-1)*12 + yOff - 8, 5, 9);
+      }
+    });
+  }
+
+  function initAll(){ initTS(); initScatter(); initParticles(); }
+  initAll();
+
+  function animate(){
+    t++;
+    ctx.clearRect(0,0,W,H);
+    drawGrid();
+    drawTS();
+    drawScatter();
+    drawRCorner();
+    drawBoxPlot();
+    drawDonut();
+    drawParticles();
+    drawLabels();
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+
+/* ── Carrossel ── */
+(function(){
+  var track    = document.getElementById('carTrack');
+  var dotsWrap = document.getElementById('carDots');
+  var btnPrev  = document.getElementById('carPrev');
+  var btnNext  = document.getElementById('carNext');
+
+  var CARDS = 9;
+  var VIS   = 3;
+  var cur   = 0;
+  var timer;
+
+  /* step = largura do card incluindo margens */
+  function step(){ return (track.offsetWidth / VIS); }
+
+  function buildDots(){
+    dotsWrap.innerHTML = '';
+    for(var i = 0; i <= CARDS - VIS; i++){
+      var d = document.createElement('div');
+      d.className = 'car-dot' + (i === 0 ? ' active' : '');
+      (function(n){ d.onclick = function(){ go(n); kick(); }; })(i);
+      dotsWrap.appendChild(d);
+    }
+  }
+
+  function go(n){
+    cur = Math.max(0, Math.min(n, CARDS - VIS));
+    track.style.transform = 'translateX(-' + (cur * step()) + 'px)';
+    var dd = dotsWrap.querySelectorAll('.car-dot');
+    for(var i = 0; i < dd.length; i++)
+      dd[i].className = 'car-dot' + (i === cur ? ' active' : '');
+  }
+
+  function kick(){
+    clearInterval(timer);
+    timer = setInterval(function(){ go(cur < CARDS - VIS ? cur + 1 : 0); }, 5000);
+  }
+
+  btnPrev.onclick = function(){ go(cur - 1); kick(); };
+  btnNext.onclick = function(){ go(cur + 1); kick(); };
+
+  buildDots();
+  kick();
+})();
+
+/* ── Parallax fundo Relatórios & Pesquisas ── */
+document.addEventListener('DOMContentLoaded', function(){
+  const bg      = document.getElementById('parallaxBg');
+  const section = document.getElementById('galeria');
+  if(!bg || !section) return;
+
+  const SPEED = 0.35; // intensidade do parallax (0 = fixo, 1 = junto com página)
+
+  function update(){
+    const rect   = section.getBoundingClientRect();
+    const viewH  = window.innerHeight;
+    // progresso da seção: -1 (acima da viewport) → 0 (centrada) → +1 (abaixo)
+    const progress = (rect.top + rect.height / 2 - viewH / 2) / viewH;
+    const offset   = progress * rect.height * SPEED;
+    bg.style.transform = `translateY(${offset}px)`;
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+});
+/* ── Menu mobile ── */
+(function(){
+  const burger = document.getElementById('navBurger');
+  const menu   = document.getElementById('mobileMenu');
+  if(!burger || !menu) return;
+  let open = false;
+  burger.addEventListener('click', () => {
+    open = !open;
+    menu.style.display = open ? 'flex' : 'none';
+    const bars = burger.querySelectorAll('span');
+    if(open){
+      bars[0].style.transform = 'translateY(7px) rotate(45deg)';
+      bars[1].style.opacity = '0';
+      bars[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+    } else {
+      bars[0].style.transform = '';
+        bars[1].style.opacity = '';
+      bars[2].style.transform = '';
+    }
+  });
+
+  function closeMobileMenu(){
+    open = false;
+    menu.style.display = 'none';
+    const bars = burger.querySelectorAll('span');
+    bars[0].style.transform = '';
+    bars[1].style.opacity = '';
+    bars[2].style.transform = '';
+  }
+  window.closeMobileMenu = closeMobileMenu;
+})();
+
+/* ── Card inteiro clicável ── */
+(function(){
+  document.querySelectorAll('.car-card').forEach(function(card){
+    card.addEventListener('click', function(e){
+    var tag = e.target.tagName.toLowerCase();
+    if(tag === 'a' || tag === 'button') return;
+    var link = card.querySelector('.car-download');
+    if(link) window.location.href = link.href;
+  });
+  });
+})();
+</script>
+</body>
+</html>
