@@ -334,7 +334,7 @@
     .dim-card:hover .dim-arrow { opacity: 0.8; transform: translate(3px,-3px); color: #fff; }
 
     .car-section {
-      padding: 10rem 3rem 5rem;
+      padding: 4rem 3rem 5rem;
       position: relative;
     }
     .car-section .sec-header,
@@ -734,10 +734,15 @@
   }
 
   .conheca-eyebrow {
-    font-size: 0.72rem; font-weight: 700;
-    letter-spacing: 0.22em; text-transform: uppercase;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: normal;
+    text-transform: none;
     color: #8DC63F;
-    margin-bottom: 20px; display: block;
+    margin-bottom: 1.2rem;
+    display: block;
+    font-family: 'Sora', sans-serif;
+    line-height: 1.15;
   }
 
   .conheca-body {
@@ -848,7 +853,7 @@
 
     <!-- Left: text -->
     <div class="conheca-text">
-      <p class="conheca-eyebrow">Conheça o Projeto</p>
+      <h2 class="conheca-eyebrow">Conheça o Projeto</h2>
       <p class="conheca-body">
         O <strong>ODSB</strong> é uma plataforma de informações sobre Barcarena voltada ao acompanhamento do desenvolvimento sustentável do município. O sistema integra dados de fontes públicas e institucionais confiáveis. A proposta é oferecer mapas interativos, dashboards e boletins periódicos que permitam monitorar o cenário municipal, identificar relações entre indicadores e apoiar análises mais amplas sobre a dinâmica do desenvolvimento local. Um instrumento de planejamento, pesquisa e apoio à tomada de decisão, contribuindo tanto para iniciativas como o Fundo Hydro e a Iniciativa Barcarena Sustentável quanto para ações do poder público e da sociedade civil.
       </p>
