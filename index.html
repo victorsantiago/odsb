@@ -96,13 +96,13 @@
 
     .hero {
       margin-top: 64px;
-      min-height: 100vh;
+      min-height: 90vh;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      background: linear-gradient(160deg, #060D20 0%, #0D1F40 55%, #0A1635 100%);
+      background: #1E2535;
     }
 
     /* Canvas de partículas / linhas */
@@ -334,7 +334,7 @@
     .dim-card:hover .dim-arrow { opacity: 0.8; transform: translate(3px,-3px); color: #fff; }
 
     .car-section {
-      padding: 5rem 3rem;
+      padding: 10rem 3rem 5rem;
       position: relative;
     }
     .car-section .sec-header,
@@ -696,7 +696,81 @@
       .hstat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
       .hstat:last-child { border-bottom: none; }
     }
-  </style>
+  
+  /* ══ CONHEÇA O PROJETO ══ */
+  .conheca-section {
+    background: #3a3f4a;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* top bar */
+  .conheca-top-bar {
+    background-color: #283349;
+    position: relative;
+    height: 60px;
+    overflow: hidden;
+  }
+  .conheca-top-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('odsbeye.png');
+    background-repeat: repeat-x;
+    background-size: auto 52px;
+    background-position: center;
+    opacity: 0.35;
+  }
+
+  .conheca-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 72px 52px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 72px;
+    align-items: center;
+    position: relative; z-index: 1;
+  }
+
+  .conheca-eyebrow {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: #8DC63F;
+    margin-bottom: 20px; display: block;
+  }
+
+  .conheca-body {
+    font-size: 16px;
+    line-height: 1.85;
+    color: rgba(255,255,255,0.78);
+    margin-bottom: 36px;
+  }
+  .conheca-body strong { color: #fff; }
+
+  .conheca-btn {
+    display: inline-block;
+    margin-top: 0;
+  }
+
+  .conheca-video-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    border: 1px solid rgba(27,79,155,0.5);
+  }
+  .conheca-video-wrap iframe {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; border: none;
+  }
+
+  @media (max-width: 900px) {
+    .conheca-inner { grid-template-columns: 1fr; padding: 48px 24px; gap: 40px; }
+  }
+</style>
 </head>
 <body>
 
@@ -747,18 +821,12 @@
       <a href="#dimensoes" class="btn-prim">Explorar Indicadores</a>
       <a href="#" class="btn-out">Saiba Mais →</a>
     </div>
-    <div class="hero-stats">
-      <div class="hstat">
-        <div class="hstat-num">50+</div>
-        <div class="hstat-label">Indicadores</div>
+    
+      
+        
       </div>
-      <div class="hstat">
-        <div class="hstat-num">9</div>
-        <div class="hstat-label">Dimensões</div>
-      </div>
-      <div class="hstat">
-        <div class="hstat-num">2025</div>
-        <div class="hstat-label">Atualizado</div>
+      
+        
       </div>
     </div>
   </div>
@@ -770,6 +838,42 @@
 </section>
 
 <!-- ══ DIMENSÕES ══ -->
+<!-- ══ CONHEÇA O PROJETO ══ -->
+<section class="conheca-section">
+
+  <!-- Top bar: ODSB icon repeating on dark blue -->
+  <div class="conheca-top-bar"></div>
+
+  <div class="conheca-inner">
+
+    <!-- Left: text -->
+    <div class="conheca-text">
+      <p class="conheca-eyebrow">Conheça o Projeto</p>
+      <p class="conheca-body">
+        O <strong>ODSB</strong> é uma plataforma de informações sobre Barcarena voltada ao acompanhamento do desenvolvimento sustentável do município. O sistema integra dados de fontes públicas e institucionais confiáveis. A proposta é oferecer mapas interativos, dashboards e boletins periódicos que permitam monitorar o cenário municipal, identificar relações entre indicadores e apoiar análises mais amplas sobre a dinâmica do desenvolvimento local. Um instrumento de planejamento, pesquisa e apoio à tomada de decisão, contribuindo tanto para iniciativas como o Fundo Hydro e a Iniciativa Barcarena Sustentável quanto para ações do poder público e da sociedade civil.
+      </p>
+      <a href="sobre.html" class="btn-prim conheca-btn">Conheça o Projeto</a>
+    </div>
+
+    <!-- Right: YouTube embed -->
+    <div class="conheca-video">
+      <div class="conheca-video-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/SEU_VIDEO_ID"
+          title="ODSB — Conheça o projeto"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+
 <section class="dimensions" id="dimensoes">
   <div class="sec-header">
     <div class="sec-eyebrow">Áreas de Monitoramento</div>
@@ -913,16 +1017,16 @@
 </section>
 
 <!-- ══ CARROSSEL ══ -->
+<div style="background:var(--light); padding:3.5rem 3rem 2.5rem; text-align:center;">
+  <div class="sec-eyebrow">Publicações Recentes</div>
+  <h2 class="sec-title">Relatórios & Pesquisas</h2>
+  <p class="sec-sub">Baixe um artigo curto sobre uma das dimensões</p>
+</div>
+
 <section class="car-section" id="galeria">
 
   <div class="car-parallax-clip">
     <div class="car-parallax-bg" id="parallaxBg"></div>
-  </div>
-
-  <div class="sec-header" style="margin-bottom:2.5rem">
-    <div class="sec-eyebrow">Publicações Recentes</div>
-    <h2 class="sec-title">Relatórios & Pesquisas</h2>
-    <p class="sec-sub" style="color:rgba(255,255,255,0.45)">Baixe um artigo curto sobre uma das dimensões</p>
   </div>
 
   <div class="car-wrap">
@@ -1189,6 +1293,12 @@
     blueA:  function(a){ return 'rgba(42,108,196,'+a+')'; },
   };
 
+  /* stats de Barcarena — declarados no topo para estarem prontos no resize() */
+  var ST=['154k hab','IDH 0.58','PIB +6.2%','42k emp','IDEB 5.1','ESF 74%',
+          'R2=0.93','17 PA','74% agua','2024','Dt+4.4%','n=847',
+          '6.200','3.8%','95% CI','29 ESF','b=0.70','s=0.08','p<0.01'];
+  var fl=[];
+
   function resize(){
     W = canvas.width  = canvas.offsetWidth;
     H = canvas.height = canvas.offsetHeight;
@@ -1347,93 +1457,6 @@
     }
   }
 
-  var donutSlices=[
-    {pct:0.32,color:C.greenA,label:'32%'},
-    {pct:0.24,color:C.orangeA,label:'24%'},
-    {pct:0.20,color:C.grayA,label:'20%'},
-    {pct:0.14,color:C.blueA,label:'14%'},
-    {pct:0.10,color:C.greenA,label:'10%'},
-  ];
-  function drawDonut(){
-    var cx=W*0.88, cy=H*0.78, R=Math.min(W,H)*0.075, r=R*0.55;
-    var rot=t*0.004-Math.PI/2;
-    ctx.fillStyle=C.grayA(0.22); ctx.font='9px IBM Plex Mono,monospace';
-    ctx.textAlign='center'; ctx.fillText('COMPOSIÇÃO', cx, cy-R-10); ctx.textAlign='left';
-
-    var angle=rot;
-    donutSlices.forEach(function(s){
-      var end=angle+s.pct*Math.PI*2;
-      ctx.beginPath(); ctx.moveTo(cx,cy);
-      ctx.arc(cx,cy,R,angle,end); ctx.closePath();
-      ctx.fillStyle=s.color(0.35); ctx.fill();
-      ctx.strokeStyle=s.color(0.6); ctx.lineWidth=1; ctx.stroke();
-      /* furo */
-      angle=end;
-    });
-    /* buraco central */
-    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
-    ctx.fillStyle='rgba(6,13,32,0.9)'; ctx.fill();
-    /* label central */
-    ctx.fillStyle=C.grayA(0.5); ctx.font='bold 10px IBM Plex Mono,monospace';
-    ctx.textAlign='center';
-    ctx.fillText('ODS', cx, cy+4);
-    ctx.textAlign='left';
-  }
-
-  function drawBoxPlot(){
-    var bx=W*0.73, by=H*0.56, bw=18, ph=H*0.20;
-    var groups=[
-      {med:0.62,q1:0.42,q3:0.78,min:0.25,max:0.90,color:C.greenA},
-      {med:0.50,q1:0.35,q3:0.65,min:0.18,max:0.82,color:C.orangeA},
-      {med:0.71,q1:0.55,q3:0.82,min:0.38,max:0.95,color:C.grayA},
-    ];
-    ctx.fillStyle=C.grayA(0.25); ctx.font='9px IBM Plex Mono,monospace'; ctx.textAlign='left';
-    ctx.fillText('BOX PLOT', bx-8, by-ph-10);
-
-    groups.forEach(function(g,i){
-      var x=bx+i*(bw+14);
-      var yMed=by-g.med*ph, yQ1=by-g.q1*ph, yQ3=by-g.q3*ph;
-      var yMin=by-g.min*ph, yMax=by-g.max*ph;
-      /* whiskers */
-      ctx.strokeStyle=g.color(0.35); ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(x+bw/2,yMin); ctx.lineTo(x+bw/2,yMax); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x+bw*0.25,yMin); ctx.lineTo(x+bw*0.75,yMin); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x+bw*0.25,yMax); ctx.lineTo(x+bw*0.75,yMax); ctx.stroke();
-      /* caixa */
-      var grd=ctx.createLinearGradient(0,yQ3,0,yQ1);
-      grd.addColorStop(0,g.color(0.35)); grd.addColorStop(1,g.color(0.12));
-      ctx.fillStyle=grd;
-      if(ctx.roundRect) ctx.roundRect(x,yQ3,bw,yQ1-yQ3,[2]);
-      else ctx.rect(x,yQ3,bw,yQ1-yQ3);
-      ctx.fill();
-      ctx.strokeStyle=g.color(0.5); ctx.lineWidth=1;
-      ctx.strokeRect(x,yQ3,bw,yQ1-yQ3);
-      /* mediana */
-      ctx.strokeStyle=g.color(0.9); ctx.lineWidth=2;
-      ctx.beginPath(); ctx.moveTo(x,yMed); ctx.lineTo(x+bw,yMed); ctx.stroke();
-    });
-  }
-
-  var floatLabels=[
-    {text:'σ = 0.082', rx:0.01, ry:0.50, colorFn:C.grayA,   phase:0,   sp:0.006},
-    {text:'μ = 0.634', rx:0.01, ry:0.57, colorFn:C.grayA,   phase:1.1, sp:0.005},
-    {text:'p < 0.001', rx:0.46, ry:0.52, colorFn:C.orangeA, phase:2.3, sp:0.007},
-    {text:'n = 1.247', rx:0.46, ry:0.59, colorFn:C.grayA,   phase:3.7, sp:0.006},
-    {text:'R² = 0.93', rx:0.46, ry:0.66, colorFn:C.greenA,  phase:5.0, sp:0.005},
-    {text:'95% CI',    rx:0.01, ry:0.64, colorFn:C.greenA,  phase:1.8, sp:0.008},
-    {text:'F=12.4',    rx:0.63, ry:0.52, colorFn:C.orangeA, phase:0.7, sp:0.006},
-    {text:'β=0.71',    rx:0.63, ry:0.59, colorFn:C.grayA,   phase:2.1, sp:0.007},
-  ];
-  function drawLabels(){
-    ctx.font='9px IBM Plex Mono,monospace'; ctx.textAlign='left';
-    floatLabels.forEach(function(lb){
-      lb.phase+=lb.sp;
-      var yOff=Math.sin(lb.phase)*5;
-      var a=0.18+Math.sin(lb.phase*0.6)*0.10;
-      ctx.fillStyle=lb.colorFn(a);
-      ctx.fillText(lb.text, lb.rx*W, lb.ry*H+yOff);
-    });
-  }
 
   var particles=[];
   function initParticles(){
@@ -1443,8 +1466,8 @@
         x:Math.random()*W, y:Math.random()*H,
         vx:(Math.random()-.5)*0.18, vy:(Math.random()-.5)*0.18,
         r:Math.random()*1.2+0.4,
-        colorFn:[C.greenA,C.orangeA,C.grayA][Math.floor(Math.random()*3)],
-        alpha:Math.random()*0.15+0.05,
+        colorFn:[C.greenA,C.orangeA,C.grayA,C.blueA][Math.floor(Math.random()*4)],
+        alpha:Math.random()*0.18+0.06,
       });
     }
   }
@@ -1458,108 +1481,54 @@
     });
   }
 
-  var rFormulas = [
-    { lines: ['lm(IDH ~ PIB + Edu,', '  data = barcarena)'], x:0.01, y:0.72, phase:0,   sp:0.003 },
-    { lines: ['t.test(x, y,', '  conf.level=0.95)'],          x:0.01, y:0.82, phase:2.1, sp:0.004 },
-    { lines: ['aov(PM25 ~ Zona', '  + Error(Ano))'],           x:0.01, y:0.91, phase:4.2, sp:0.003 },
-    { lines: ['cor.test(IDH,PIB,', '  method="pearson")'],     x:0.16, y:0.77, phase:1.1, sp:0.0035},
-    { lines: ['glm(Saude~.,data,', '  family=gaussian)'],      x:0.16, y:0.87, phase:3.5, sp:0.003 },
-  ];
-
-  /* box plots flutuantes — cada um com posição e fase próprias */
-  var floatBoxes = [
-    { x:0.03, y:0.60, w:0.055, h:0.10, phase:0,   sp:0.006, colorFn:C.greenA  },
-    { x:0.10, y:0.58, w:0.045, h:0.09, phase:2.1, sp:0.005, colorFn:C.orangeA },
-    { x:0.17, y:0.61, w:0.050, h:0.08, phase:4.3, sp:0.007, colorFn:C.grayA   },
-  ];
-
-  function drawRCorner(){
-    /* ── fundo translúcido ── */
-    ctx.fillStyle = 'rgba(6,13,32,0.0)';
-
-    /* ── box plots flutuantes ── */
-    floatBoxes.forEach(function(b){
-      b.phase += b.sp;
-      var breathe = Math.sin(b.phase) * 0.008;
-      var bx = (b.x + breathe) * W;
-      var by = b.y * H;
-      var bw = b.w * W;
-      var ph = b.h * H;
-
-      /* valores relativos com leve oscilação */
-      var med = 0.50 + Math.sin(b.phase*0.7)*0.06;
-      var q1  = med  - 0.20 - Math.sin(b.phase*0.5)*0.03;
-      var q3  = med  + 0.20 + Math.cos(b.phase*0.5)*0.03;
-      var mn  = q1   - 0.12;
-      var mx  = q3   + 0.12;
-
-      var yMed = by + (1-med)*ph;
-      var yQ1  = by + (1-q1 )*ph;
-      var yQ3  = by + (1-q3 )*ph;
-      var yMin = by + (1-mn )*ph;
-      var yMax = by + (1-mx )*ph;
-
-      ctx.globalAlpha = 0.55;
-
-      /* whiskers */
-      ctx.strokeStyle = b.colorFn(0.40); ctx.lineWidth = 0.8;
-      ctx.beginPath(); ctx.moveTo(bx+bw/2, yMin); ctx.lineTo(bx+bw/2, yMax); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(bx+bw*.2,yMin); ctx.lineTo(bx+bw*.8,yMin); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(bx+bw*.2,yMax); ctx.lineTo(bx+bw*.8,yMax); ctx.stroke();
-
-      /* caixa */
-      var grd = ctx.createLinearGradient(0,yQ3,0,yQ1);
-      grd.addColorStop(0, b.colorFn(0.22));
-      grd.addColorStop(1, b.colorFn(0.06));
-      ctx.fillStyle = grd;
-      ctx.beginPath();
-      if(ctx.roundRect) ctx.roundRect(bx,yQ3,bw,yQ1-yQ3,[2]);
-      else ctx.rect(bx,yQ3,bw,yQ1-yQ3);
-      ctx.fill();
-      ctx.strokeStyle = b.colorFn(0.40); ctx.lineWidth = 0.8;
-      ctx.strokeRect(bx,yQ3,bw,yQ1-yQ3);
-
-      /* mediana */
-      ctx.strokeStyle = b.colorFn(0.80); ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(bx,yMed); ctx.lineTo(bx+bw,yMed); ctx.stroke();
-
-      ctx.globalAlpha = 1;
-    });
-
-    /* ── fórmulas R ── */
-    ctx.font = '8.5px IBM Plex Mono,monospace';
-    rFormulas.forEach(function(f){
-      f.phase += f.sp;
-      var yOff = Math.sin(f.phase) * 3;
-      var a    = 0.18 + Math.sin(f.phase*0.5)*0.06;
-      ctx.fillStyle = C.greenA(a);
-      f.lines.forEach(function(line, li){
-        ctx.fillText(line, f.x*W, f.y*H + li*12 + yOff);
+  /* stats subindo */
+  function initFloats(){
+    fl=[];
+    var cnt=Math.max(16,Math.min(28,Math.floor(W/55)));
+    var cFns=[C.greenA,C.orangeA,C.blueA,C.grayA];
+    for(var i=0;i<cnt;i++){
+      fl.push({
+        x:Math.random()*W,
+        y:H+Math.random()*H,
+        vy:0.28+Math.random()*0.42,
+        al:Math.random()*0.35+0.10,
+        sz:Math.floor(Math.random()*3),
+        cFn:cFns[Math.floor(Math.random()*cFns.length)],
+        tx:ST[Math.floor(Math.random()*ST.length)]
       });
-      /* cursor piscante na última linha */
-      if(Math.floor(t/30)%2===0){
-        var lastLine = f.lines[f.lines.length-1];
-        var tw = ctx.measureText(lastLine).width;
-        ctx.fillStyle = C.greenA(a*1.5);
-        ctx.fillRect(f.x*W + tw + 2, f.y*H + (f.lines.length-1)*12 + yOff - 8, 5, 9);
+    }
+  }
+  function drawFloats(){
+    var szs=['7px','9px','11px'];
+    fl.forEach(function(f){
+      f.y-=f.vy;
+      if(f.y<-20){
+        f.y=H+Math.random()*50; f.x=Math.random()*W;
+        f.tx=ST[Math.floor(Math.random()*ST.length)];
+        f.vy=0.28+Math.random()*0.42;
+        f.al=Math.random()*0.35+0.10;
+        f.cFn=[C.greenA,C.orangeA,C.blueA,C.grayA][Math.floor(Math.random()*4)];
       }
+      var a=f.al*(f.y<H*0.15?f.y/(H*0.15):1);
+      ctx.font=szs[f.sz]+' IBM Plex Mono,monospace';
+      ctx.fillStyle=f.cFn(a);
+      ctx.textAlign='center';
+      ctx.fillText(f.tx,f.x,f.y);
     });
+    ctx.textAlign='left';
   }
 
-  function initAll(){ initTS(); initScatter(); initParticles(); }
+  function initAll(){ initTS(); initScatter(); initParticles(); initFloats(); }
   initAll();
 
   function animate(){
     t++;
     ctx.clearRect(0,0,W,H);
     drawGrid();
+    drawFloats();
     drawTS();
     drawScatter();
-    drawRCorner();
-    drawBoxPlot();
-    drawDonut();
     drawParticles();
-    drawLabels();
     requestAnimationFrame(animate);
   }
   animate();
